@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 1
+    },
+    "auditLog": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\.b6d94dc532d15046c3bc6140ac30911b8a96df7c-audit.json",
+    "files": [
+        {
+            "date": 1748870785170,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\02-06-2025-19-error.log",
+            "hash": "fa05027ab9400c4ca121e64e4fbad8e86f51c4a4c539679e91a3ced2ca2d9bf9"
+        },
+        {
+            "date": 1748873882269,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\02-06-2025-20-error.log",
+            "hash": "d3d74e5d594fad9d703b0476fae9910fe2f76dfe9e0fccc1da5748a7636c276c"
+        }
+    ],
+    "hashType": "sha256"
+}

@@ -1,0 +1,31 @@
+Mon Jun 02 2025 19:26:25 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:26:27 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:26:32 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:26:34 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:26:40 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:26:55 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:27:7 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:27:10 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 6006
+Mon Jun 02 2025 19:27:14 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:27:18 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:27:21 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 6006
+Mon Jun 02 2025 19:27:23 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:27:26 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 6006
+Mon Jun 02 2025 19:27:28 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:27:30 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:27:33 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 6006
+Mon Jun 02 2025 19:28:0 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:28:3 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 6006
+Mon Jun 02 2025 19:28:7 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:28:12 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:28:49 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m
+Mon Jun 02 2025 19:28:52 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 6006
+Mon Jun 02 2025 19:30:42 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 6006
+Mon Jun 02 2025 19:30:58 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 6006
+Mon Jun 02 2025 19:31:37 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 5006
+Mon Jun 02 2025 19:34:15 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 5006
+Mon Jun 02 2025 19:35:11 [MY_SERVER] error: UnhandleException Detected getaddrinfo ENOTFOUND 5006
+Mon Jun 02 2025 19:40:19 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m ipAddress is not defined
+Mon Jun 02 2025 19:40:25 [MY_SERVER] error: [31m🤢 Failed to connect Database[39m socketPort is not defined
+Mon Jun 02 2025 19:44:25 [MY_SERVER] error: UnhandleRejection Detected otpSendEmail is not defined
+Mon Jun 02 2025 19:47:8 [MY_SERVER] error: UnhandleRejection Detected otpSendEmail is not defined
