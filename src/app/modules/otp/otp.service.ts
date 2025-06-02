@@ -8,10 +8,8 @@ import { generateOptAndExpireTime } from './otp.utils';
 import { otpSendEmail } from '../../utils/eamilNotifiacation';
 
 const createOtp = async ({
-  name,
   sentTo,
   receiverType,
-  purpose,
   otp,
   expiredAt,
 }: CreateOtpParams) => {
@@ -19,7 +17,6 @@ const createOtp = async ({
   const newOTP = new Otp({
     sentTo,
     receiverType,
-    purpose,
     otp,
     expiredAt,
   });

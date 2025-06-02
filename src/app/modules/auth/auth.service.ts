@@ -1,10 +1,7 @@
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import AppError from '../../error/AppError';
-import {
-  IJwtPayload,
-  TLogin,
-} from './auth.interface';
+import { IJwtPayload, TLogin } from './auth.interface';
 import config from '../../config';
 import bcrypt from 'bcrypt';
 import { TUser } from '../user/user.interface';
@@ -56,6 +53,7 @@ const login = async (payload: TLogin) => {
 };
 
 // forgot Password
+// forgot Password
 const forgotPassword = async (email: string) => {
   const user: TUser | null = await User.isUserActive(email);
 
@@ -64,20 +62,7 @@ const forgotPassword = async (email: string) => {
   }
 
   const { isExist, isExpireOtp } = await otpServices.checkOtpByEmail(email);
-
   const { otp, expiredAt } = generateOptAndExpireTime();
-
-  // if (isExist && !isExpireOtp) {
-  //   throw new AppError(httpStatus.BAD_REQUEST, 'otp-exist. Check your email.');
-  // } else if (isExist && isExpireOtp) {
-  //   const otpUpdateData = {
-  //     otp,
-  //     expiredAt,
-  //     status: 'pending',
-  //   };
-
-  //   await otpServices.updateOtpByEmail(email, otpUpdateData);
-  // }
 
   if (isExist && !isExpireOtp) {
     throw new AppError(httpStatus.BAD_REQUEST, 'otp-exist. Check your email.');
@@ -89,9 +74,9 @@ const forgotPassword = async (email: string) => {
 
     await otpServices.updateOtpByEmail(email, otpUpdateData);
   } else if (!isExist) {
-    await otpServices.createOtp({ 
+    await otpServices.createOtp({
       sentTo: email,
-      receiverType: 'email', 
+      receiverType: 'email',
       otp,
       expiredAt,
     });
@@ -108,14 +93,15 @@ const forgotPassword = async (email: string) => {
     expity_time: config.otp_token_expire_time as string | number,
   });
 
-  process.nextTick(async () => {
-    await otpSendEmail({
-      sentTo: email,
-      subject: 'Your one time otp for forget password',
-      name: '',
-      otp,
-      expiredAt: expiredAt,
-    });
+  // Send email, handle errors so they don't crash your app
+  otpSendEmail({
+    sentTo: email,
+    subject: 'Your one time otp for forget password',
+    name: '',
+    otp,
+    expiredAt,
+  }).catch((err) => {
+    console.error('Failed to send OTP email:', err);
   });
 
   return { forgetToken, otp: config.NODE_ENV === 'development' ? otp : '' };
