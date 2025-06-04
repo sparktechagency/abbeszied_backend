@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../error/AppError';
 import { DeleteAccountPayload, TUser, TCoachCreate } from './user.interface';
@@ -8,13 +6,10 @@ import { USER_ROLE } from './user.constants';
 import config from '../../config';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { otpServices } from '../otp/otp.service';
-import { generateOptAndExpireTime } from '../otp/otp.utils';
-import { TPurposeType } from '../otp/otp.interface';
 import { userCreateEmail } from '../../utils/eamilNotifiacation';
 import { createToken, verifyToken } from '../../utils/tokenManage';
-import mongoose from 'mongoose';
-import Parking from '../parking/parking.model';
 import { IJwtPayload } from '../auth/auth.interface';
+import { Certificate } from '../experience/experience.models';
 
 export type IFilter = {
   searchTerm?: string;
@@ -28,11 +23,15 @@ export interface OTPVerifyAndCreateUserProps {
 }
 
 const createUserToken = async (payload: TCoachCreate) => {
-  const { email, role, fullName } = payload;
+  const { email, role, fullName, cerificates } = payload;
 
-  console.log(payload);
-
-  if (!(role === 'client' || role === 'coach' || role === 'corporate')) {
+  if (
+    !(
+      role === USER_ROLE.CLIENT ||
+      role === USER_ROLE.COACH ||
+      role === USER_ROLE.CORPORATE
+    )
+  ) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Invalid data!');
   }
 
@@ -57,6 +56,17 @@ const createUserToken = async (payload: TCoachCreate) => {
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, 'User creation failed');
   }
+  console.log('create user', user);
+  // Create certificates if provided
+  if (cerificates && cerificates.length > 0) {
+    const certificatePromises = cerificates.map((certificateFile) => {
+      return Certificate.create({
+        certificateFile,
+        userId: user._id,
+      });
+    });
+    await Promise.all(certificatePromises);
+  }
 
   const jwtPayload: IJwtPayload = {
     fullName: user?.fullName,
@@ -66,15 +76,11 @@ const createUserToken = async (payload: TCoachCreate) => {
     role: user?.role,
   };
 
-  // console.log({ jwtPayload });
-
   const accessToken = createToken({
     payload: jwtPayload,
     access_secret: config.jwt_access_secret as string,
     expity_time: config.jwt_access_expires_in as string,
   });
-
-  // console.log({ accessToken });
 
   const refreshToken = createToken({
     payload: jwtPayload,
@@ -152,15 +158,15 @@ const otpVerifyAndCreateUser = async ({
 // ............................rest
 
 const getAllUserQuery = async (query: Record<string, unknown>) => {
-  const userQuery = new QueryBuilder(User.find({}), query)
-    .search(['fullName', 'email', 'phone'])
+  const queryBuilder = new QueryBuilder(User.find() as any, query)
+    .search(['fullName', 'email', 'phone', 'role'])
     .filter()
     .sort()
     .paginate()
     .fields();
 
-  const result = await userQuery.modelQuery;
-  const meta = await userQuery.countTotal();
+  const result = await queryBuilder.modelQuery.exec();
+  const meta = await queryBuilder.countTotal();
   return { meta, result };
 };
 
@@ -229,20 +235,6 @@ const getUserByEmail = async (email: string) => {
   return result;
 };
 
-// const isBusinessExist = async (parkingId: string) => {
-//   const result: any = await Parking.findOne({
-//     _id: new mongoose.Types.ObjectId(parkingId),
-//   }).populate({
-//     path: 'ownerId',
-//     select: '_id stripeConnectedAcount revenue',
-//   });
-
-//   console.log('object');
-//   console.log(result);
-
-//   return result;
-// };
-
 const updateUser = async (id: string, payload: Partial<TUser>) => {
   const { email, password, role, ...rest } = payload;
 
@@ -256,9 +248,6 @@ const updateUser = async (id: string, payload: Partial<TUser>) => {
 };
 
 const updateOwnerStatusService = async (businessId: string) => {
-  // console.log({ payload });
-  // console.log({ rest });
-  //
   const businessOwner = await User.findById(businessId);
   if (!businessOwner) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');

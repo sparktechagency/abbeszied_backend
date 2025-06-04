@@ -15,6 +15,9 @@ export interface TClientCreate {
   email: string;
   password: string;
   phone: string;
+  address: string;
+  bio?: string;
+  introVideo?: string;
   role: (typeof USER_ROLE)[keyof typeof USER_ROLE];
 }
 
@@ -28,7 +31,6 @@ export interface TCoachCreate extends TClientCreate {
 export interface TUser extends TCoachCreate {
   _id: string;
   image: string;
-  revenue?: number;
   stripeConnectedAcount: string;
   stripeCustomerId: string;
   isActive: boolean;

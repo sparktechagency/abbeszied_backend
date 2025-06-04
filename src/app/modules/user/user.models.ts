@@ -1,8 +1,9 @@
-import { Error, Schema, Types, model } from 'mongoose';
+import { Error, Schema, model } from 'mongoose';
 import config from '../../config';
 import bcrypt from 'bcrypt';
 import { TUser, UserModel } from './user.interface';
 import { Role, USER_ROLE } from './user.constants';
+import { Aggregate } from 'mongoose';
 
 const userSchema = new Schema<TUser>(
   {
@@ -24,11 +25,26 @@ const userSchema = new Schema<TUser>(
       enum: Role,
       default: USER_ROLE.CLIENT,
     },
+    address: {
+      type: String,
+      default: '',
+    },
+    language: {
+      type: String,
+      default: 'english',
+    },
+    bio: {
+      type: String,
+      default: '',
+    },
+    introVideo: {
+      type: String,
+      default: '',
+    },
     phone: {
       type: String,
       default: '',
     },
-
     password: {
       type: String,
       required: true,
@@ -43,11 +59,7 @@ const userSchema = new Schema<TUser>(
       type: [String],
       default: undefined,
     },
-    cerificates: {
-      type: [String],
-      default: undefined,
-    },
-
+  
     stripeConnectedAcount: {
       type: String,
       default: '',
@@ -72,7 +84,12 @@ const userSchema = new Schema<TUser>(
     },
   },
 );
-
+userSchema.set('toJSON', {
+  transform: function (doc, ret) {
+    delete ret.password;
+    return ret;
+  },
+});
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
@@ -93,33 +110,22 @@ userSchema.post(
   },
 );
 
-userSchema.methods.toJSON = function () {
-  const user = this.toObject();
-  delete user.password; // Remove password field
-  return user;
-};
-
 // filter out deleted documents
 userSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
 });
-
 userSchema.pre('findOne', function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
 });
-
-userSchema.pre('aggregate', function (next) {
+userSchema.pre('aggregate', function (this: Aggregate<any>, next) {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
 });
-
 userSchema.statics.isUserExist = async function (email: string) {
-  // console.log({ email });
   return await User.findOne({ email: email }).select('+password');
 };
-
 userSchema.statics.isUserActive = async function (email: string) {
   return await User.findOne({
     email: email,
@@ -127,11 +133,9 @@ userSchema.statics.isUserActive = async function (email: string) {
     isActive: true,
   }).select('+password');
 };
-
 userSchema.statics.IsUserExistById = async function (id: string) {
   return await User.findById(id).select('+password');
 };
-
 userSchema.statics.isPasswordMatched = async function (
   plainTextPassword,
   hashedPassword,

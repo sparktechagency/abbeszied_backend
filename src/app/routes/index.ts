@@ -12,6 +12,7 @@ import { paymentRoutes } from '../modules/payment/payment.route';
 import { parkingBookingRoutes } from '../modules/booking/booking.route';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
+import experienceRoutes from '../modules/experience/experience.route';
 
 const router = Router();
 
@@ -67,6 +68,10 @@ const moduleRoutes = [
   {
     path: '/contact',
     route: contactUsRoutes,
+  },
+  {
+    path: '/experience',
+    route: experienceRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
