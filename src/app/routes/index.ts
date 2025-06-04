@@ -9,10 +9,10 @@ import { parkingRoutes } from '../modules/parking/parking.route';
 import favouriteRoutes from '../modules/favourite/favourite.route';
 import reviewRouters from '../modules/ratings/ratings.route';
 import { paymentRoutes } from '../modules/payment/payment.route';
-import { parkingBookingRoutes } from '../modules/booking/booking.route';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
 import experienceRoutes from '../modules/experience/experience.route';
+import sessionRoutes from '../modules/session/session.route';
 
 const router = Router();
 
@@ -58,10 +58,6 @@ const moduleRoutes = [
     route: paymentRoutes,
   },
   {
-    path: '/booking',
-    route: parkingBookingRoutes,
-  },
-  {
     path: '/stripe',
     route: stripeAccountRoutes,
   },
@@ -72,6 +68,10 @@ const moduleRoutes = [
   {
     path: '/experience',
     route: experienceRoutes,
+  },
+  {
+    path: '/sessions',
+    route: sessionRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

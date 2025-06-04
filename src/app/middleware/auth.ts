@@ -1,5 +1,4 @@
 import httpStatus from 'http-status';
-import jwt from 'jsonwebtoken';
 import { JwtPayload } from 'jsonwebtoken';
 import catchAsync from '../utils/catchAsync';
 import AppError from '../error/AppError';
