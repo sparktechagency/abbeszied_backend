@@ -14,6 +14,7 @@ import contactUsRoutes from '../modules/contactUs/contactUs.route';
 import experienceRoutes from '../modules/experience/experience.route';
 import sessionRoutes from '../modules/session/session.route';
 import galleryRoutes from '../modules/gallery/gallery.route';
+import { supportRoutes } from '../modules/support/support.route';
 
 const router = Router();
 
@@ -77,6 +78,14 @@ const moduleRoutes = [
   {
     path: '/gallery',
     route: galleryRoutes,
+  },
+  {
+    path: '/support',
+    route: supportRoutes,
+  },
+  {
+    path: '/admin/support',
+    route: supportRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
