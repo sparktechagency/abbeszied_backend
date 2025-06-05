@@ -8,7 +8,7 @@ const createSession = catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.user;
   const result = await sessionService.createSession({
     ...req.body,
-    userId,
+    coachId: userId,
   });
 
   sendResponse(res, {

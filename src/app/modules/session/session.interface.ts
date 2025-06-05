@@ -10,7 +10,7 @@ export interface ISession {
   pricePerSession: number;
   selectedDay: Date;
   timeSlots: ITimeSlot[];
-  userId: Types.ObjectId;
+  coachId: Types.ObjectId;
   isActive: boolean;
 }
 

@@ -3,10 +3,9 @@ import AppError from '../../error/AppError';
 import { ISession } from './session.interface';
 import { Session } from './session.models';
 import { User } from '../../modules/user/user.models';
-import { Types } from 'mongoose';
 
 const createSession = async (payload: ISession) => {
-  const user = await User.IsUserExistById(payload.userId.toString());
+  const user = await User.IsUserExistById(payload.coachId.toString());
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -67,8 +66,8 @@ const updateSession = async (id: string, payload: Partial<ISession>) => {
   return result;
 };
 
-const deleteSession = async (id: string, userId: string) => {
-  const exists = await Session.findOne({ _id: id, userId });
+const deleteSession = async (id: string, coachId: string) => {
+  const exists = await Session.findOne({ _id: id, coachId });
   if (!exists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
   }
@@ -77,8 +76,8 @@ const deleteSession = async (id: string, userId: string) => {
   return result;
 };
 
-const getUserSessions = async (userId: string) => {
-  const result = await Session.find({ userId });
+const getUserSessions = async (coachId: string) => {
+  const result = await Session.find({ coachId });
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
   }

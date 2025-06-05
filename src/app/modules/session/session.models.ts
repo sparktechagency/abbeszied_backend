@@ -35,7 +35,7 @@ const sessionSchema = new Schema<ISession>(
       type: [timeSlotSchema],
       required: true,
     },
-    userId: {
+    coachId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,

@@ -7,7 +7,6 @@ import notificationRoutes from '../modules/notification/notification.route';
 import { ruleRoutes } from '../modules/rule/rule.routes';
 import { parkingRoutes } from '../modules/parking/parking.route';
 import favouriteRoutes from '../modules/favourite/favourite.route';
-import reviewRouters from '../modules/ratings/ratings.route';
 import { paymentRoutes } from '../modules/payment/payment.route';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
@@ -15,6 +14,7 @@ import experienceRoutes from '../modules/experience/experience.route';
 import sessionRoutes from '../modules/session/session.route';
 import galleryRoutes from '../modules/gallery/gallery.route';
 import { supportRoutes } from '../modules/support/support.route';
+import { reviewRoutes } from '../modules/review/review.router';
 
 const router = Router();
 
@@ -52,10 +52,6 @@ const moduleRoutes = [
     route: notificationRoutes,
   },
   {
-    path: '/review',
-    route: reviewRouters,
-  },
-  {
     path: '/payment',
     route: paymentRoutes,
   },
@@ -86,6 +82,10 @@ const moduleRoutes = [
   {
     path: '/admin/support',
     route: supportRoutes,
+  },
+  {
+    path: '/review',
+    route: reviewRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
