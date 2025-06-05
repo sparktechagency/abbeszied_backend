@@ -13,6 +13,7 @@ import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
 import experienceRoutes from '../modules/experience/experience.route';
 import sessionRoutes from '../modules/session/session.route';
+import galleryRoutes from '../modules/gallery/gallery.route';
 
 const router = Router();
 
@@ -72,6 +73,10 @@ const moduleRoutes = [
   {
     path: '/sessions',
     route: sessionRoutes,
+  },
+  {
+    path: '/gallery',
+    route: galleryRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

@@ -6,7 +6,6 @@ import auth from '../../middleware/auth';
 import { USER_ROLE } from './user.constants';
 import parseData from '../../middleware/parseData';
 import fileUpload from '../../middleware/fileUpload';
-import { resentOtpValidations } from '../otp/otp.validation';
 const upload = fileUpload('./public/uploads/profile');
 
 export const userRoutes = Router();

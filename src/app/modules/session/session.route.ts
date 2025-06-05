@@ -35,17 +35,7 @@ sessionRoutes
     auth(USER_ROLE.CLIENT, USER_ROLE.COACH),
     sessionController.getAvailableTimeSlots,
   )
-  .get(
-    '/status',
-    auth(USER_ROLE.CLIENT),
-    sessionController.getSessionStatus,
-  )
-  .post(
-    '/book',
-    auth(USER_ROLE.CLIENT),
-    validateRequest(sessionValidation.bookTimeSlotValidationSchema),
-    sessionController.bookTimeSlot,
-  )
+
   .get(
     '/:id',
     auth(USER_ROLE.CLIENT, USER_ROLE.COACH),

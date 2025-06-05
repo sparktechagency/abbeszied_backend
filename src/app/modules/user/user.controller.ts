@@ -3,21 +3,19 @@ import catchAsync from '../../utils/catchAsync';
 import { userService } from './user.service';
 import sendResponse from '../../utils/sendResponse';
 import { updateFileName } from '../../utils/fileHelper';
-
 import httpStatus from 'http-status';
 import { FilesObject } from '../../interface/common.interface';
+import { USER_ROLE } from './user.constants';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const { body, files } = req as Request & { files: FilesObject };
-
   const cerificates = files.cerificates?.map((photo) =>
     updateFileName('profile', photo.filename),
   );
-
   body.cerificates = cerificates;
 
   if (!body.role) {
-    body.role = 'client';
+    body.role = USER_ROLE.CLIENT;
   }
   const data = await userService.createUserToken(body);
 

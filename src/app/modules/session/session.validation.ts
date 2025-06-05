@@ -30,23 +30,7 @@ const updateSessionValidationSchema = z.object({
   }),
 });
 
-const bookTimeSlotValidationSchema = z.object({
-    body: z.object({
-      sessionId: z.string({
-        required_error: 'Session ID is required',
-      }),
-      timeSlotStartTime: z.string({
-        required_error: 'Time slot start time is required',
-      }).regex(
-        /^([0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/,
-        'Invalid time format. Use HH:mm format'
-      ),
-    }),
-  });
-  
-
 export const sessionValidation = {
   createSessionValidationSchema,
   updateSessionValidationSchema,
-  bookTimeSlotValidationSchema,
 };

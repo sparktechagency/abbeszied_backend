@@ -52,13 +52,4 @@ const sessionSchema = new Schema<ISession>(
     },
   },
 );
-// Optional: Add a method to update the booking status of a time slot
-sessionSchema.methods.toggleBooking = function (slotIndex: number) {
-  if (this.timeSlots[slotIndex]) {
-    this.timeSlots[slotIndex].isBooked = !this.timeSlots[slotIndex].isBooked;
-    return this.save();
-  }
-  return Promise.reject('Time slot not found');
-};
-
 export const Session = model<ISession>('Session', sessionSchema);

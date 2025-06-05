@@ -56,7 +56,6 @@ const createUserToken = async (payload: TCoachCreate) => {
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, 'User creation failed');
   }
-  console.log('create user', user);
   // Create certificates if provided
   if (cerificates && cerificates.length > 0) {
     const certificatePromises = cerificates.map((certificateFile) => {

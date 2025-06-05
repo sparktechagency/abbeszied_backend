@@ -129,97 +129,6 @@ const getAvailableTimeSlots = async (coachId: string, selectedDay: Date) => {
   return availableTimeSlots;
 };
 
-const getSessionStatus = async (userId: string) => {
-  const currentDate = new Date();
-  const sessions = await Session.find({
-    'timeSlots.bookedBy': userId,
-  }).populate('userId', 'fullName email');
-
-  const upcoming: {
-    sessionId: Types.ObjectId;
-    coachId: Types.ObjectId;
-    startTime: string;
-    endTime: string;
-    selectedDay: Date;
-    pricePerSession: number;
-  }[] = [];
-  const completed: {
-    sessionId: Types.ObjectId;
-    coachId: Types.ObjectId;
-    startTime: string;
-    endTime: string;
-    selectedDay: Date;
-    pricePerSession: number;
-    completedAt: Date;
-  }[] = [];
-
-  sessions.forEach((session) => {
-    session.timeSlots.forEach((slot) => {
-      if (slot.bookedBy?.toString() === userId) {
-        const sessionDateTime = new Date(session.selectedDay);
-        const [hours, minutes] = slot.endTime.split(':');
-        sessionDateTime.setHours(parseInt(hours), parseInt(minutes));
-
-        const sessionInfo = {
-          sessionId: session._id,
-          coachId: session.userId,
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-          selectedDay: session.selectedDay,
-          pricePerSession: session.pricePerSession,
-        };
-
-        if (sessionDateTime > currentDate) {
-          upcoming.push(sessionInfo);
-        } else {
-          completed.push({
-            ...sessionInfo,
-            completedAt: sessionDateTime,
-          });
-        }
-      }
-    });
-  });
-
-  return {
-    upcoming: upcoming.sort(
-      (a, b) => a.selectedDay.getTime() - b.selectedDay.getTime(),
-    ),
-    completed: completed.sort(
-      (a, b) => b.completedAt.getTime() - a.completedAt.getTime(),
-    ),
-  };
-};
-
-const bookTimeSlot = async (
-  sessionId: string,
-  timeSlotStartTime: string,
-  userId: string,
-) => {
-  const session = await Session.findById(sessionId);
-  if (!session) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
-  }
-
-  const timeSlot = session.timeSlots.find(
-    (slot) => slot.startTime === timeSlotStartTime,
-  );
-  if (!timeSlot) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Time slot not found');
-  }
-
-  if (timeSlot.isBooked) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Time slot is already booked');
-  }
-
-  timeSlot.isBooked = true;
-  timeSlot.bookedBy = userId;
-  timeSlot.bookingDate = new Date();
-
-  await session.save();
-  return session;
-};
-
 export const sessionService = {
   createSession,
   updateSession,
@@ -228,6 +137,4 @@ export const sessionService = {
   getSessionById,
   getAllSessions,
   getAvailableTimeSlots,
-  getSessionStatus,
-  bookTimeSlot,
 };

@@ -99,37 +99,6 @@ const getAvailableTimeSlots = catchAsync(async (req: Request, res: Response) => 
   });
 });
 
-const bookTimeSlot = catchAsync(async (req: Request, res: Response) => {
-  const { sessionId, timeSlotStartTime } = req.body;
-  const { userId } = req.user;
-
-  const result = await sessionService.bookTimeSlot(
-    sessionId,
-    timeSlotStartTime,
-    userId
-  );
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Time slot booked successfully',
-    data: result,
-  });
-});
-
-const getSessionStatus = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.user;
-
-  const result = await sessionService.getSessionStatus(userId);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Session status retrieved successfully',
-    data: result,
-  });
-});
-
 export const sessionController = {
   createSession,
   updateSession,
@@ -137,7 +106,5 @@ export const sessionController = {
   getUserSessions,
   getSessionById,
   getAllSessions,
-  getAvailableTimeSlots,
-  bookTimeSlot,
-  getSessionStatus
+  getAvailableTimeSlots
 };

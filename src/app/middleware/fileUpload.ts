@@ -33,7 +33,7 @@ const fileUpload = (uploadDirectory: string) => {
     fileFilter: function (req: Request, file, cb) {
       const allowedMimeTypes = [
         'image/png',
-        'image/jpg', 
+        'image/jpg',
         'image/jpeg',
         'image/svg+xml',
         'image/webp',
@@ -43,13 +43,18 @@ const fileUpload = (uploadDirectory: string) => {
         'video/mpeg',
         'video/quicktime', // .mov
         'video/x-msvideo', // .avi
-        'video/webm'
+        'video/webm',
+        'application/octet-stream',
       ];
 
       if (allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
       } else {
-        cb(new Error('Invalid file type. Only images, videos, and PDFs are allowed.'));
+        cb(
+          new Error(
+            'Invalid file type. Only images, videos, and PDFs are allowed.',
+          ),
+        );
       }
     },
   });
@@ -57,15 +62,17 @@ const fileUpload = (uploadDirectory: string) => {
   return {
     // Single file upload
     single: (fieldName: string) => upload.single(fieldName),
-    
+
     // Multiple files with same field name
-    array: (fieldName: string, maxCount: number = 10) => upload.array(fieldName, maxCount),
-    
+    array: (fieldName: string, maxCount: number = 10) =>
+      upload.array(fieldName, maxCount),
+
     // Multiple files with different field names
-    fields: (fields: { name: string; maxCount?: number }[]) => upload.fields(fields),
-    
+    fields: (fields: { name: string; maxCount?: number }[]) =>
+      upload.fields(fields),
+
     // Any files
-    any: () => upload.any()
+    any: () => upload.any(),
   };
 };
 
