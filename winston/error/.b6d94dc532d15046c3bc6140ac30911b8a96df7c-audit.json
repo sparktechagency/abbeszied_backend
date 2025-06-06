@@ -6,11 +6,6 @@
     "auditLog": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\.b6d94dc532d15046c3bc6140ac30911b8a96df7c-audit.json",
     "files": [
         {
-            "date": 1749052831361,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\04-06-2025-22-error.log",
-            "hash": "1692affc9a1e4de119d73b765e5dc804f765ff99a8560d95f64f55df4f17b88a"
-        },
-        {
             "date": 1749115187588,
             "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\05-06-2025-15-error.log",
             "hash": "970cd67b5fd123c5c5059a95c0571aee56f2c17450a30dcc0bacedcf0ffd70fb"
@@ -44,6 +39,26 @@
             "date": 1749135947124,
             "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\05-06-2025-21-error.log",
             "hash": "20cf139a2ac500f4b88eb7b357d185da724cd8d4fe121ca565e51a299397da45"
+        },
+        {
+            "date": 1749191288252,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\06-06-2025-12-error.log",
+            "hash": "4d4bc1339b2997eb9477e9a4d277cea97b0812e27ce73d6605467b71eb75ab8b"
+        },
+        {
+            "date": 1749193246351,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\06-06-2025-13-error.log",
+            "hash": "f53867a9db07366c9dfca0da4e92e39331399a82341618449a9198c0ea06646b"
+        },
+        {
+            "date": 1749198416424,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\06-06-2025-14-error.log",
+            "hash": "491e487dde5cba72f1d7baac3929c256c58debf894cacf00370f79178599e30f"
+        },
+        {
+            "date": 1749200495456,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\06-06-2025-15-error.log",
+            "hash": "cf05e6667f13b07f58f6aaa4e836f5b83bf1defe37e8f8b857cc5f296746e2c3"
         }
     ],
     "hashType": "sha256"

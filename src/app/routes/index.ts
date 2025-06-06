@@ -15,6 +15,7 @@ import sessionRoutes from '../modules/session/session.route';
 import galleryRoutes from '../modules/gallery/gallery.route';
 import { supportRoutes } from '../modules/support/support.route';
 import { reviewRoutes } from '../modules/review/review.router';
+import { storeRouter } from '../modules/store/store.route';
 
 const router = Router();
 
@@ -86,6 +87,10 @@ const moduleRoutes = [
   {
     path: '/review',
     route: reviewRoutes,
+  },
+  {
+    path: '/store',
+    route: storeRouter,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
