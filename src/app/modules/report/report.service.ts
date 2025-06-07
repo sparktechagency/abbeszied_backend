@@ -1,154 +1,173 @@
-import { StatusCodes } from 'http-status-codes';
-import { IReport } from './report.interface';
 import { Report } from './report.model';
-import AppError from '../../../errors/AppError';
+import { IReport } from './report.interface';
+import mongoose from 'mongoose';
+import Product from '../store/store.model';
+import AppError from '../../error/AppError';
+import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { User } from '../user/user.models';
+import { USER_ROLE } from '../user/user.constants';
+import { sendNotifications } from '../../helpers/sendNotification';
+import { reportWarning } from '../../utils/eamilNotifiacation';
 
-const createReportToDB = async (payload: IReport): Promise<IReport> => {
-     const report = await Report.create(payload);
-     if (!report) throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to created Report ');
-     return report;
-};
-// Get all reports
-const getAllReports = async (query: Record<string, unknown>) => {
-     const queryBuilder = new QueryBuilder(
-          Report.find({})
-               .populate('sellerId', 'name image')
-               .populate('customerId', 'name image location'),
-          query,
-     );
-     const reports = await queryBuilder
-          .search(['location', 'title', 'category'])
-          .filter()
-          .sort()
-          .paginate()
-          .fields()
-          .modelQuery.exec();
+const createReport = async (payload: IReport) => {
+  const product = await Product.findById(payload.produtId);
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
+  }
 
-     const meta = await queryBuilder.countTotal();
+  const result = await Report.create(payload);
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create report');
+  }
+//   const getAdmin = await User.findOne({ role: USER_ROLE.SUPER_ADMIN });
+//   if (!getAdmin) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'Admin not found');
+//   }
+//   await sendNotifications({
+//     recipientRole: 'ADMIN',
+//     message: `A user has reported a product ${product.name}`,
+//     type: 'info',
+//     receiver: getAdmin._id,
+//   });
+  await sendNotifications({
+    recipientRole: 'USER',
+    message: `Your product ${product.name} has been reported`,
+    type: 'info',
+    receiver: product.sellerId,
+  });
+  //@ts-ignore
+  //   const io = global.io;
+  //   if (io) {
+  //     io.emit(`notification::${product.sellerId.toString()}`, userNotification);
+  //     io.emit(`notification::${getAdmin._id}`, adminNotification);
+  //   }
 
-     return { reports, meta };
-};
-
-// Get a report by ID
-const getReportById = async (reportId: string): Promise<IReport | null> => {
-     const report = await Report.findById(reportId);
-     if (!report) {
-          throw new AppError(StatusCodes.NOT_FOUND, 'Report not found');
-     }
-     return report;
-};
-// Update report status
-const updateReportStatus = async (reportId: string, status: string): Promise<IReport> => {
-     if (!status || !['under review', 'resolved'].includes(status)) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid status value');
-     }
-     const updatedReport = await Report.findByIdAndUpdate(reportId, { status }, { new: true });
-
-     if (!updatedReport) {
-          throw new AppError(StatusCodes.NOT_FOUND, 'Report not found');
-     }
-     return updatedReport;
-};
-// Delete a report
-const deleteReport = async (reportId: string): Promise<void> => {
-     const deletedReport = await Report.findByIdAndDelete(reportId);
-
-     if (!deletedReport) {
-          throw new AppError(StatusCodes.NOT_FOUND, 'Report not found');
-     }
+  return result;
 };
 
-//  get Statistics for reported issues
-const getReportedIssuesStatistics = async (query: Record<string, unknown>) => {
-     const matchFilter: any = {};
+const getAllReports = async (query: Record<string, any>) => {
+  const reportQuery = new QueryBuilder(
+    Report.find()
+      .populate({
+        path: 'postId',
+        select: 'title images author',
+        populate: {
+          path: 'author',
+          select: 'userName email',
+        },
+      })
+      .populate({
+        path: 'reporterId',
+        select: 'userName email',
+      }),
+    query,
+  )
+    .search(['reason', 'description'])
 
-     if (query?.location) {
-          matchFilter.location = query.location;
-     }
+    .filter()
+    .sort()
+    .paginate();
 
-     const monthQuery = query?.month as string;
+  const result = await reportQuery.modelQuery;
+  const meta = await reportQuery.countTotal();
 
-     if (monthQuery) {
-          const [year, month] = monthQuery.split('-');
-          if (!year || !month || month.length !== 2 || year.length !== 4) {
-               throw new AppError(
-                    StatusCodes.BAD_REQUEST,
-                    'Invalid month format. Use YYYY-MM format.',
-               );
-          }
+  return {
+    meta,
+    result,
+  };
+};
 
-          const startDate = new Date(Number(year), Number(month) - 1, 1);
-          const endDate = new Date(Number(year), Number(month), 0);
+const giveWarningReportedPostAuthorToDB = async (
+  reportId: string,
+  message: string,
+) => {
+  const report = await Report.findById(reportId);
+  if (!report) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Report not found');
+  }
 
-          matchFilter.createdAt = { $gte: startDate, $lte: endDate };
-     }
+  const product = await Product.findById(report.produtId);
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
+  }
 
-     const statistics = await Report.aggregate([
-          {
-               $match: matchFilter,
-          },
-          {
-               $group: {
-                    _id: {
-                         month: { $month: '$createdAt' },
-                         year: { $year: '$createdAt' },
-                         status: '$status',
-                    },
-                    count: { $sum: 1 },
-               },
-          },
-          {
-               $sort: { '_id.year': 1, '_id.month': 1 },
-          },
-          {
-               $project: {
-                    _id: 0,
-                    month: '$_id.month',
-                    year: '$_id.year',
-                    status: '$_id.status',
-                    count: 1,
-               },
-          },
-     ]);
+  const seller = await User.findById(product.sellerId);
+  if (!seller) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Seller not found');
+  }
 
-     // if (!statistics || statistics.length === 0) {
-     //   throw new AppError(StatusCodes.NOT_FOUND, 'No statistics found');
-     // }
+  const result = await Report.findByIdAndUpdate(reportId, {
+    status: 'reviewed',
+    new: true,
+    runValidators: true,
+  });
+  const reportData = {
+    name: seller.fullName,
+    email: seller.email,
+    produtcName: product.name,
+    message: message,
+  };
+  await sendNotifications({
+    recipientRole: 'USER',
+    message: `Your product ${product.name} has been reported`,
+    type: 'info',
+    receiver: product.sellerId,
+  });
+  //@ts-ignore
+  //   const io = global.io;
+  //   if (io) {
+  //     io.emit(`notification::${product.sellerId.toString()}`, notification);
+  //   }
+  process.nextTick(async () => {
+    await reportWarning({
+      sentTo: reportData.email,
+      subject: 'Community Guidelines Warning: Action Required',
+      name: reportData.produtcName,
+      seller: reportData.name,
+      message: reportData.message,
+    });
+  });
+  return result;
+};
 
-     const result = statistics.reduce((acc: any, curr: any) => {
-          const { month, status, count } = curr;
+const deleteReportedPost = async (reportId: string) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-          if (!acc[month]) {
-               acc[month] = {
-                    'under review': 0,
-                    'resolved': 0,
-               };
-          }
+  try {
+    const isExist = await Report.findById(reportId).session(session);
+    if (!isExist) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Report not found');
+    }
 
-          // Increment the count based on the status
-          acc[month][status] = count;
-          return acc;
-     }, {});
+    await Product.findByIdAndUpdate(
+      isExist.produtId,
+      { isDeleted: true },
+      { session },
+    );
 
-     // Ensure that every month from 1 to 12 has the status structure
-     for (let month = 1; month <= 12; month++) {
-          if (!result[month]) {
-               result[month] = {
-                    'under review': 0,
-                    'resolved': 0,
-               };
-          }
-     }
+    await Report.deleteOne({ _id: isExist._id }, { session });
+    await Report.findByIdAndUpdate(
+      isExist._id,
+      {
+        status: 'resolved',
+      },
+      { session, runValidators: true, new: true },
+    );
 
-     return result;
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };
 
 export const ReportService = {
-     createReportToDB,
-     getAllReports,
-     getReportById,
-     updateReportStatus,
-     deleteReport,
-     getReportedIssuesStatistics,
+  createReport,
+  getAllReports,
+  deleteReportedPost,
+  giveWarningReportedPostAuthorToDB,
 };

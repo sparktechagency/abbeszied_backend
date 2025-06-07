@@ -15,6 +15,7 @@ export interface TClientCreate {
   email: string;
   password: string;
   phone: string;
+  language?: string[];
   address: string;
   bio?: string;
   introVideo?: string;

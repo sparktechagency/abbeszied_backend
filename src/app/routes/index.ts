@@ -16,6 +16,9 @@ import galleryRoutes from '../modules/gallery/gallery.route';
 import { supportRoutes } from '../modules/support/support.route';
 import { reviewRoutes } from '../modules/review/review.router';
 import { storeRouter } from '../modules/store/store.route';
+import { reportRoutes } from '../modules/report/report.route';
+import { chatRoutes } from '../modules/chat/chat.route';
+import { messageRoutes } from '../modules/message/message.route';
 
 const router = Router();
 
@@ -91,6 +94,18 @@ const moduleRoutes = [
   {
     path: '/store',
     route: storeRouter,
+  },
+  {
+    path: '/report',
+    route: reportRoutes,
+  },
+  {
+    path: '/chat',
+    route: chatRoutes,
+  },
+  {
+    path: '/messages',
+    route: messageRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

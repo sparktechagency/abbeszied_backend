@@ -1,89 +1,67 @@
-import catchAsync from '../../../shared/catchAsync';
+import { Request, Response } from 'express';
 import { ReportService } from './report.service';
-import sendResponse from '../../../shared/sendResponse';
-import { StatusCodes } from 'http-status-codes';
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import httpStatus from 'http-status';
+import { updateFileName } from '../../utils/fileHelper';
 
-const createReport = catchAsync(async (req, res) => {
-     const { id }: any = req.user;
-     const payload = {
-          customerId: id,
-          ...req.body,
-     };
-     const result = await ReportService.createReportToDB(payload);
-
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Report created Successfully',
-          data: result,
-     });
-});
-// Get all reports
-const getAllReports = catchAsync(async (req, res) => {
-     const reports = await ReportService.getAllReports(req.query);
-
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Reports retrieved successfully',
-          data: reports,
-     });
-});
-// Get a report by ID
-const getReportById = catchAsync(async (req, res) => {
-     const { reportId } = req.params;
-     const report = await ReportService.getReportById(reportId);
-
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Report retrieved successfully',
-          data: report,
-     });
-});
-// Update report status
-const updateReportStatus = catchAsync(async (req, res) => {
-     const { reportId } = req.params;
-     const { status } = req.body;
-
-     const updatedReport = await ReportService.updateReportStatus(reportId, status);
-
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Report status updated successfully',
-          data: updatedReport,
-     });
-});
-// Delete report
-const deleteReport = catchAsync(async (req, res) => {
-     const { reportId } = req.params;
-
-     await ReportService.deleteReport(reportId);
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Report deleted successfully',
-     });
+const createReport = catchAsync(async (req: Request, res: Response) => {
+  req.body.reporterId = req.user?.userId;
+  if (req?.file) {
+    req.body.image = updateFileName('reports', req?.file?.filename);
+  } 
+  const result = await ReportService.createReport(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Report created successfully',
+    data: result,
+  });
 });
 
-const getReportedIssuesStatistics = catchAsync(async (req, res) => {
-     const query = req.query;
-     const statistics = await ReportService.getReportedIssuesStatistics(query);
+const getAllReports = catchAsync(async (req: Request, res: Response) => {
+  const result = await ReportService.getAllReports(req.query);
 
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Reported issues statistics fetched successfully',
-          data: statistics,
-     });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Reports retrieved successfully',
+    data: result,
+  });
+});
+
+const giveWarningReportedPostAuthor = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await ReportService.giveWarningReportedPostAuthorToDB(
+      id,
+      req.body.message,
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Report status updated successfully',
+      data: result,
+    });
+  },
+);
+
+const deleteReportedPost = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ReportService.deleteReportedPost(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Report status updated successfully',
+    data: result,
+  });
 });
 
 export const ReportController = {
-     createReport,
-     getAllReports,
-     getReportById,
-     updateReportStatus,
-     deleteReport,
-     getReportedIssuesStatistics,
+  createReport,
+  getAllReports,
+  deleteReportedPost,
+  giveWarningReportedPostAuthor,
 };

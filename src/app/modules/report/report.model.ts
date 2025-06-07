@@ -1,50 +1,35 @@
-import { model, Schema } from 'mongoose';
-import { IReport, ReportModel } from './report.interface';
-import generateOrderNumber from '../../../utils/genarateOrderNumber';
+import { Schema, model } from 'mongoose';
+import { IReport } from './report.interface';
 
-const reportSchema = new Schema<IReport, ReportModel>(
-     {
-          customerId: {
-               type: Schema.Types.ObjectId,
-               required: true,
-               ref: 'User',
-          },
-          sellerId: {
-               type: Schema.Types.ObjectId,
-               required: true,
-               ref: 'User',
-          },
-          reportId: {
-               type: String,
-               required: true,
-               default: function () {
-                    return generateOrderNumber('rep-');
-               },
-          },
-          location: {
-               type: String,
-               required: true,
-          },
-          image: {
-               type: String,
-               required: true,
-          },
-          type: {
-               type: String,
-               required: true,
-          },
-          reason: {
-               type: String,
-               required: true,
-          },
-          status: {
-               type: String,
-               required: true,
-               enum: ['under review', 'resolved'],
-               default: 'under review',
-          },
-     },
-     { timestamps: true },
+const reportSchema = new Schema<IReport>(
+  {
+    produtId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+      required: true,
+    },
+    reporterId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    }, 
+    description: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'reviewed', 'resolved'],
+      default: 'pending',
+    },
+  },
+  {
+    timestamps: true,
+  },
 );
 
-export const Report = model<IReport, ReportModel>('Report', reportSchema);
+export const Report = model<IReport>('Report', reportSchema);

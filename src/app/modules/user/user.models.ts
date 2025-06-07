@@ -30,8 +30,8 @@ const userSchema = new Schema<TUser>(
       default: '',
     },
     language: {
-      type: String,
-      default: 'english',
+      type: [String],
+      default: [],
     },
     bio: {
       type: String,

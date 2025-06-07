@@ -9,12 +9,12 @@ const notificationRoutes = Router();
 notificationRoutes
   .post(
     '/',
-    auth(USER_ROLE.BUSINESS, USER_ROLE.USER, USER_ROLE.ADMIN),
+    auth(USER_ROLE.COACH, USER_ROLE.CLIENT, USER_ROLE.ADMIN),
     NotificationController.createNotification,
   )
   .get(
     '',
-    auth(USER_ROLE.BUSINESS, USER_ROLE.USER, USER_ROLE.ADMIN),
+    auth(USER_ROLE.COACH, USER_ROLE.CLIENT, USER_ROLE.ADMIN),
     NotificationController.getSingleNotification,
   );
 

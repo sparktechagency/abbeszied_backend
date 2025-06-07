@@ -4,10 +4,15 @@ import { TNotification } from './notification.interface';
 // Define the schema
 const NotificationSchema = new Schema<TNotification>(
   {
-    userId: {
+    receiver: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'User',
+    },
+    recipientRole: {
+      type: String,
+      enum: ['ADMIN', 'SUPER_ADMIN', 'USER'],
+      default: 'ADMIN',
     },
     message: {
       type: String,

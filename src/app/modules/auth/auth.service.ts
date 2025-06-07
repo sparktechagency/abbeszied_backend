@@ -70,6 +70,7 @@ const forgotPassword = async (email: string) => {
     const otpUpdateData = {
       otp,
       expiredAt,
+      status: 'pending'
     };
 
     await otpServices.updateOtpByEmail(email, otpUpdateData);
@@ -78,7 +79,7 @@ const forgotPassword = async (email: string) => {
       sentTo: email,
       receiverType: 'email',
       otp,
-      expiredAt,
+      expiredAt, 
     });
   }
 
@@ -112,7 +113,6 @@ const forgotPasswordOtpMatch = async ({
   otp,
   token,
 }: OTPVerifyAndCreateUserProps) => {
-  // console.log({ otp, token });
   if (!token) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Token not found');
   }
@@ -121,7 +121,6 @@ const forgotPasswordOtpMatch = async ({
     token,
     access_secret: config.jwt_access_secret as string,
   });
-
   if (!decodeData) {
     throw new AppError(httpStatus.BAD_REQUEST, 'You are not authorised');
   }
@@ -243,9 +242,7 @@ const changePassword = async ({
   return result;
 };
 
-// rest ..............................
 
-// Forgot password
 
 // Refresh token
 const refreshToken = async (token: string) => {

@@ -113,15 +113,11 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
-  console.log('Files received:', req.files);
-  console.log('Body before:', req.body);
-
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
   // Handle image upload
   if (files?.image?.[0]) {
     req.body.image = updateFileName('profile', files.image[0].filename);
-    console.log('Image processed:', req.body.image);
   }
 
   // Handle introVideo upload
@@ -130,10 +126,7 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
       'profile',
       files.introVideo[0].filename,
     );
-    console.log('IntroVideo processed:', req.body.introVideo);
   }
-
-  console.log('Body after:', req.body);
 
   const result = await userService.updateUser(req?.user?.userId, req.body);
 
