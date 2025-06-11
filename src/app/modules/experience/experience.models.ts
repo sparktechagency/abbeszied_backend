@@ -13,11 +13,15 @@ const workHistorySchema = new Schema<IWorkHistory>(
     },
     startDate: {
       type: Date,
-      required: true,
+      default: '',
     },
     endDate: {
       type: Date,
-      required: true,
+      default: '',
+    },
+    currentWork: {
+      type: Boolean,
+      default: false,
     },
     userId: {
       type: Schema.Types.ObjectId,
@@ -57,5 +61,11 @@ const certificateSchema = new Schema<ICertificate>(
   },
 );
 
-export const WorkHistory = model<IWorkHistory>('WorkHistory', workHistorySchema);
-export const Certificate = model<ICertificate>('Certificate', certificateSchema);
+export const WorkHistory = model<IWorkHistory>(
+  'WorkHistory',
+  workHistorySchema,
+);
+export const Certificate = model<ICertificate>(
+  'Certificate',
+  certificateSchema,
+);

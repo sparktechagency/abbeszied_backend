@@ -1,99 +1,452 @@
 import httpStatus from 'http-status';
 import AppError from '../../error/AppError';
-import { ISession } from './session.interface';
+import { ISession, IDailySession, SessionPackage } from './session.interface';
 import { Session } from './session.models';
 import { User } from '../../modules/user/user.models';
+import { Types } from 'mongoose';
+import QueryBuilder from '../../builder/QueryBuilder';
 
-const createSession = async (payload: ISession) => {
-  const user = await User.IsUserExistById(payload.coachId.toString());
+// Helper function to convert 12-hour format to 24-hour format
+const convertTo24Hour = (time12h: string): string => {
+  const [time, modifier] = time12h.split(' ');
+  let [hours, minutes] = time.split(':');
+
+  if (hours === '12') {
+    hours = '00';
+  }
+
+  if (modifier === 'PM' || modifier === 'pm') {
+    hours = (parseInt(hours, 10) + 12).toString();
+  }
+
+  return `${hours.padStart(2, '0')}:${minutes}`;
+};
+
+// Helper function to convert 24-hour format to 12-hour format
+const convertTo12Hour = (time24h: string): string => {
+  const [hours, minutes] = time24h.split(':');
+  const hour = parseInt(hours, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${ampm}`;
+};
+
+// Helper function to get dates for next months based on day names
+const getDatesByDayNames = (dayNames: string[], months: number = 2): Date[] => {
+  const dayMapping: { [key: string]: number } = {
+    sunday: 0,
+    sun: 0,
+    monday: 1,
+    mon: 1,
+    tuesday: 2,
+    tue: 2,
+    wednesday: 3,
+    wed: 3,
+    thursday: 4,
+    thu: 4,
+    friday: 5,
+    fri: 5,
+    saturday: 6,
+    sat: 6,
+  };
+
+  const dates: Date[] = [];
+  const today = new Date();
+  const endDate = new Date();
+  endDate.setMonth(today.getMonth() + months);
+
+  // Convert day names to numbers
+  const targetDays = dayNames
+    .map((day) => dayMapping[day.toLowerCase()])
+    .filter((day) => day !== undefined);
+
+  // Generate dates for the next specified months
+  for (
+    let date = new Date(today);
+    date <= endDate;
+    date.setDate(date.getDate() + 1)
+  ) {
+    if (targetDays.includes(date.getDay())) {
+      dates.push(new Date(date));
+    }
+  }
+
+  return dates;
+};
+
+// // Helper function to get package session count
+// const getPackageSessionCount = (packageType: SessionPackage): number => {
+//   const packageCounts = {
+//     [SessionPackage.SINGLE]: 1,
+//     [SessionPackage.PACKAGE_4]: 4,
+//     [SessionPackage.PACKAGE_8]: 8,
+//     [SessionPackage.PACKAGE_12]: 12
+//   };
+//   return packageCounts[packageType] || 1;
+// };
+
+const createSession = async (payload: {
+  coachId: string;
+  pricePerSession: number;
+  selectedDay: string[] | Date; // Can be day names array or single date
+  timeSlots: any[];
+  language?: string[];
+  // sessionPackage?: SessionPackage;
+}) => {
+  const user = await User.IsUserExistById(payload.coachId);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  // Validate time slots format and calculate end time (1 hour after start)
-  payload.timeSlots = payload.timeSlots.map((slot) => {
-    const start = new Date(`1970-01-01T${slot.startTime}`);
+  // Determine if it's day names or single date
+  let targetDates: Date[] = [];
 
+  if (Array.isArray(payload.selectedDay)) {
+    // Day names provided - generate dates for next 2 months
+    targetDates = getDatesByDayNames(payload.selectedDay, 2);
+  } else {
+    // Single date provided
+    targetDates = [new Date(payload.selectedDay)];
+  }
+
+  if (targetDates.length === 0) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'No valid dates found for the provided day names',
+    );
+  }
+
+  // Validate and process time slots
+  const processedTimeSlots = payload.timeSlots.map((slot) => {
+    let startTime24h: string;
+
+    // Check if time includes AM/PM
+    if (
+      slot.startTime.includes('AM') ||
+      slot.startTime.includes('PM') ||
+      slot.startTime.includes('am') ||
+      slot.startTime.includes('pm')
+    ) {
+      startTime24h = convertTo24Hour(slot.startTime);
+    } else {
+      // Assume it's already in 24-hour format
+      startTime24h = slot.startTime;
+    }
+
+    const start = new Date(`1970-01-01T${startTime24h}`);
     if (isNaN(start.getTime())) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Invalid time format');
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Invalid time format: ${slot.startTime}`,
+      );
     }
 
     // Calculate end time (1 hour after start)
     const end = new Date(start.getTime() + 60 * 60 * 1000);
-    const endTime = end.toTimeString().slice(0, 5);
+    const endTime24h = end.toTimeString().slice(0, 5);
+    const endTime12h = convertTo12Hour(endTime24h);
 
     return {
-      ...slot,
-      endTime,
+      startTime: startTime24h,
+      startTime12h: convertTo12Hour(startTime24h),
+      endTime: endTime24h,
+      endTime12h: endTime12h,
       isBooked: false,
     };
   });
 
-  const result = await Session.create(payload);
-  return result;
+  // Check if session already exists for this coach
+  const existingSession = await Session.findOne({
+    coachId: new Types.ObjectId(payload.coachId),
+  });
+
+  // const sessionPackage = payload.sessionPackage || SessionPackage.SINGLE;
+  // const totalSessions = getPackageSessionCount(sessionPackage);
+
+  if (existingSession) {
+    // Add new dates to existing session
+    const newDailySessions: IDailySession[] = targetDates.map((date) => ({
+      selectedDay: date,
+      timeSlots: processedTimeSlots,
+      isActive: true,
+    }));
+
+    const result = await Session.findOneAndUpdate(
+      { coachId: new Types.ObjectId(payload.coachId) },
+      {
+        $push: { dailySessions: { $each: newDailySessions } },
+        $set: {
+          pricePerSession: payload.pricePerSession,
+          language: payload.language || existingSession.language,
+          // sessionPackage: sessionPackage,
+          // totalSessions: totalSessions,
+        },
+      },
+      { new: true },
+    );
+    return result;
+  } else {
+    // Create new session document
+    const dailySessions: IDailySession[] = targetDates.map((date) => ({
+      selectedDay: date,
+      timeSlots: processedTimeSlots,
+      isActive: true,
+    }));
+
+    const sessionData: ISession = {
+      pricePerSession: payload.pricePerSession,
+      dailySessions: dailySessions,
+      language: payload.language || [],
+      coachId: new Types.ObjectId(payload.coachId),
+      // sessionPackage: sessionPackage,
+      // totalSessions: totalSessions,
+      // bookedSessions: 0,
+      isActive: true,
+    };
+
+    const result = await Session.create(sessionData);
+    return result;
+  }
 };
 
-const updateSession = async (id: string, payload: Partial<ISession>) => {
-  const exists = await Session.findById(id);
-  if (!exists) {
+const updateSession = async (
+  coachId: string,
+  selectedDay: Date,
+  payload: {
+    pricePerSession?: number;
+    timeSlots?: any[];
+    language?: string[];
+    isActive?: boolean;
+    sessionPackage?: SessionPackage;
+  },
+) => {
+  const session = await Session.findOne({
+    coachId: new Types.ObjectId(coachId),
+  });
+  if (!session) {
     throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
   }
 
-  if (payload.timeSlots) {
-    // Convert time to 24-hour format and calculate end time
-    payload.timeSlots = payload.timeSlots.map((slot) => {
-      const standardTime = slot.startTime;
-      const start = new Date(`1970-01-01T${standardTime}`);
+  const updateData: any = {};
 
+  // Update global session fields
+  if (payload.pricePerSession !== undefined) {
+    updateData.pricePerSession = payload.pricePerSession;
+  }
+  if (payload.language !== undefined) {
+    updateData.language = payload.language;
+  }
+  if (payload.isActive !== undefined) {
+    updateData.isActive = payload.isActive;
+  }
+
+  // Update specific daily session
+  if (payload.timeSlots) {
+    const processedTimeSlots = payload.timeSlots.map((slot) => {
+      let startTime24h: string;
+
+      // Check if time includes AM/PM
+      if (
+        slot.startTime.includes('AM') ||
+        slot.startTime.includes('PM') ||
+        slot.startTime.includes('am') ||
+        slot.startTime.includes('pm')
+      ) {
+        startTime24h = convertTo24Hour(slot.startTime);
+      } else {
+        startTime24h = slot.startTime;
+      }
+
+      const start = new Date(`1970-01-01T${startTime24h}`);
       if (isNaN(start.getTime())) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Invalid time format');
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          `Invalid time format: ${slot.startTime}`,
+        );
       }
 
       // Calculate end time (1 hour after start)
       const end = new Date(start.getTime() + 60 * 60 * 1000);
-      const endTime = end.toTimeString().slice(0, 5);
+      const endTime24h = end.toTimeString().slice(0, 5);
 
       return {
-        ...slot,
-        startTime: standardTime,
-        endTime,
+        startTime: startTime24h,
+        startTime12h: convertTo12Hour(startTime24h),
+        endTime: endTime24h,
+        endTime12h: convertTo12Hour(endTime24h),
         isBooked: slot.isBooked || false,
       };
     });
+
+    // Update the specific daily session
+    const result = await Session.findOneAndUpdate(
+      {
+        coachId: new Types.ObjectId(coachId),
+        'dailySessions.selectedDay': selectedDay,
+      },
+      {
+        ...updateData,
+        'dailySessions.$.timeSlots': processedTimeSlots,
+      },
+      { new: true },
+    );
+
+    if (!result) {
+      throw new AppError(
+        httpStatus.NOT_FOUND,
+        'Daily session not found for the specified date',
+      );
+    }
+    return result;
   }
 
-  const result = await Session.findByIdAndUpdate(id, payload, { new: true });
+  // Update only global fields
+  const result = await Session.findOneAndUpdate(
+    { coachId: new Types.ObjectId(coachId) },
+    updateData,
+    { new: true },
+  );
   return result;
 };
 
-const deleteSession = async (id: string, coachId: string) => {
-  const exists = await Session.findOne({ _id: id, coachId });
-  if (!exists) {
+// Book a time slot
+const bookTimeSlot = async (payload: {
+  coachId: string;
+  selectedDay: Date;
+  startTime: string;
+  clientId: string;
+}) => {
+  const session = await Session.findOne({
+    coachId: new Types.ObjectId(payload.coachId),
+  });
+
+  if (!session) {
     throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
   }
 
-  const result = await Session.findByIdAndDelete(id);
+  // Convert time to 24-hour format if needed
+  let startTime24h = payload.startTime;
+  if (
+    payload.startTime.includes('AM') ||
+    payload.startTime.includes('PM') ||
+    payload.startTime.includes('am') ||
+    payload.startTime.includes('pm')
+  ) {
+    startTime24h = convertTo24Hour(payload.startTime);
+  }
+
+  const result = await Session.findOneAndUpdate(
+    {
+      coachId: new Types.ObjectId(payload.coachId),
+      'dailySessions.selectedDay': payload.selectedDay,
+      'dailySessions.timeSlots.startTime': startTime24h,
+      'dailySessions.timeSlots.isBooked': false,
+    },
+    {
+      $set: {
+        'dailySessions.$[session].timeSlots.$[slot].isBooked': true,
+        'dailySessions.$[session].timeSlots.$[slot].clientId':
+          new Types.ObjectId(payload.clientId),
+      },
+      $inc: { bookedSessions: 1 },
+    },
+    {
+      arrayFilters: [
+        { 'session.selectedDay': payload.selectedDay },
+        { 'slot.startTime': startTime24h, 'slot.isBooked': false },
+      ],
+      new: true,
+    },
+  );
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Time slot not available or already booked',
+    );
+  }
+
   return result;
+};
+
+const deleteSession = async (coachId: string, selectedDay?: Date) => {
+  const session = await Session.findOne({
+    coachId: new Types.ObjectId(coachId),
+  });
+  if (!session) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
+  }
+
+  if (selectedDay) {
+    // Delete specific daily session
+    const result = await Session.findOneAndUpdate(
+      { coachId: new Types.ObjectId(coachId) },
+      { $pull: { dailySessions: { selectedDay: selectedDay } } },
+      { new: true },
+    );
+
+    // If no daily sessions left, delete the entire session document
+    if (result && result.dailySessions.length === 0) {
+      await Session.findByIdAndDelete(result._id);
+      return null;
+    }
+    return result;
+  } else {
+    // Delete entire session document
+    const result = await Session.findOneAndDelete({
+      coachId: new Types.ObjectId(coachId),
+    });
+    return result;
+  }
 };
 
 const getUserSessions = async (coachId: string) => {
-  const result = await Session.find({ coachId });
+  const result = await Session.findOne({
+    coachId: new Types.ObjectId(coachId),
+  }).populate('coachId', 'fullName email');
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
   }
   return result;
 };
-
-const getSessionById = async (id: string) => {
-  const result = await Session.findById(id);
-  if (!result) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
+const getRecommendedCoach = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  // 1. Get the user and their interests
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
-  return result;
+
+  const userInterests = user.interests || [];
+  const baseQuery =
+    userInterests.length > 0
+      ? Session.find({ 'coachId.category': { $in: userInterests } }).select(
+          'pricePerSession coachId',
+        )
+      : Session.find().select('pricePerSession coachId');
+  baseQuery.populate('coachId', 'name email category image');
+
+  const queryBuilder = new QueryBuilder(baseQuery, query);
+  const result = await queryBuilder
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .search([])
+    .priceRange()
+    .modelQuery.exec();
+  const meta = await queryBuilder.countTotal();
+
+  return {
+    result,
+    meta,
+  };
 };
 
 const getAllSessions = async () => {
-  const result = await Session.find().populate('userId', 'fullName email');
+  const result = await Session.find().populate('coachId', 'fullName email');
   return result;
 };
 
@@ -104,36 +457,75 @@ const getAvailableTimeSlots = async (coachId: string, selectedDay: Date) => {
   const dayEnd = new Date(selectedDay);
   dayEnd.setHours(23, 59, 59, 999);
 
-  const sessions = await Session.find({
-    userId: coachId,
-    selectedDay: {
-      $gte: dayStart,
-      $lte: dayEnd,
-    },
+  const session = await Session.findOne({
+    coachId: new Types.ObjectId(coachId),
     isActive: true,
+    dailySessions: {
+      $elemMatch: {
+        selectedDay: {
+          $gte: dayStart,
+          $lte: dayEnd,
+        },
+        isActive: true,
+      },
+    },
   });
 
-  // Get all available time slots
-  const availableTimeSlots = sessions.flatMap((session) =>
-    session.timeSlots
-      .filter((slot) => !slot.isBooked)
-      .map((slot) => ({
-        sessionId: session._id,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-        pricePerSession: session.pricePerSession,
-      })),
-  );
+  if (!session) {
+    return [];
+  }
+
+  // Find the specific daily session for the selected day
+  const dailySession = session.dailySessions.find((ds) => {
+    const dsDate = new Date(ds.selectedDay);
+    dsDate.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(selectedDay);
+    selectedDate.setHours(0, 0, 0, 0);
+    return dsDate.getTime() === selectedDate.getTime() && ds.isActive;
+  });
+
+  if (!dailySession) {
+    return [];
+  }
+
+  // Get available time slots
+  const availableTimeSlots = dailySession.timeSlots
+    .filter((slot) => !slot.isBooked)
+    .map((slot) => ({
+      sessionId: session._id,
+      coachId: session.coachId,
+      selectedDay: dailySession.selectedDay,
+      startTime: slot.startTime,
+      startTime12h: slot.startTime12h,
+      endTime: slot.endTime,
+      endTime12h: slot.endTime12h,
+      pricePerSession: session.pricePerSession,
+    }));
 
   return availableTimeSlots;
+};
+const getCoach = async (coachId: string) => {
+  const result = await Session.findOne({
+    coachId: new Types.ObjectId(coachId),
+  })
+    .populate('coachId')
+    .lean();
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
+  }
+
+  return result;
 };
 
 export const sessionService = {
   createSession,
   updateSession,
+  bookTimeSlot,
   deleteSession,
   getUserSessions,
-  getSessionById,
   getAllSessions,
   getAvailableTimeSlots,
+  getRecommendedCoach,
+  getCoach,
 };

@@ -1,19 +1,34 @@
 import { Types } from 'mongoose';
 
-export interface ITimeSlot {
-  startTime: string;
-  endTime: string;
-  isBooked: boolean;
+export enum SessionPackage {
+  SINGLE = 'single',
+  PACKAGE_4 = 'package_4',
+  PACKAGE_8 = 'package_8',
+  PACKAGE_12 = 'package_12'
 }
 
-export interface ISession {
-  pricePerSession: number;
+export interface ITimeSlot {
+  startTime: string; // 24-hour format
+  startTime12h?: string; // 12-hour format with AM/PM
+  endTime: string; // 24-hour format
+  endTime12h?: string; // 12-hour format with AM/PM
+  isBooked: boolean;
+  clientId?: Types.ObjectId;
+}
+
+export interface IDailySession {
   selectedDay: Date;
   timeSlots: ITimeSlot[];
-  coachId: Types.ObjectId;
   isActive: boolean;
 }
 
-export type TSessionResponse = {
-  _id: Types.ObjectId;
-} & ISession;
+export interface ISession {
+  _id?: Types.ObjectId;
+  pricePerSession: number;
+  dailySessions: IDailySession[];
+  language: string[];
+  coachId: Types.ObjectId;
+  isActive: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

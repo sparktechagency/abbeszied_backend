@@ -7,13 +7,7 @@ const workHistoryValidationSchema = z.object({
     }),
     designation: z.string({
       required_error: 'Designation is required',
-    }),
-    startDate: z.string({
-      required_error: 'Start date is required',
-    }),
-    endDate: z.string({
-      required_error: 'End date is required',
-    }),
+    })
   }),
 });
 

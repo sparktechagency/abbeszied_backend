@@ -7,13 +7,46 @@ const timeSlotSchema = new Schema(
       type: String,
       required: true,
     },
+    startTime12h: {
+      type: String,
+      required: false,
+    },
     endTime: {
       type: String,
       required: true,
     },
+    endTime12h: {
+      type: String,
+      required: false,
+    },
     isBooked: {
       type: Boolean,
       default: false,
+    },
+    clientId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+const dailySessionSchema = new Schema(
+  {
+    selectedDay: {
+      type: Date,
+      required: true,
+    },
+    timeSlots: {
+      type: [timeSlotSchema],
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {
@@ -27,19 +60,21 @@ const sessionSchema = new Schema<ISession>(
       type: Number,
       required: true,
     },
-    selectedDay: {
-      type: Date,
-      required: true,
+    dailySessions: {
+      type: [dailySessionSchema],
+      default: [],
     },
-    timeSlots: {
-      type: [timeSlotSchema],
-      required: true,
+    language: {
+      type: [String],
+      default: [],
     },
     coachId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      unique: true, // Ensures one session document per coach
     },
+
     isActive: {
       type: Boolean,
       default: true,
@@ -52,4 +87,9 @@ const sessionSchema = new Schema<ISession>(
     },
   },
 );
+
+// Index for better query performance
+sessionSchema.index({ 'dailySessions.selectedDay': 1, coachId: 1 });
+sessionSchema.index({ sessionPackage: 1 });
+
 export const Session = model<ISession>('Session', sessionSchema);

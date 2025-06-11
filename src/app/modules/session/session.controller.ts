@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { sessionService } from './session.service';
+import AppError from '../../error/AppError';
 
 const createSession = catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.user;
@@ -12,7 +13,7 @@ const createSession = catchAsync(async (req: Request, res: Response) => {
   });
 
   sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: httpStatus.CREATED,
     success: true,
     message: 'Session created successfully',
     data: result,
@@ -20,8 +21,14 @@ const createSession = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateSession = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await sessionService.updateSession(id, req.body);
+  const { userId } = req.user;
+  const { selectedDay } = req.body;
+
+  const result = await sessionService.updateSession(
+    userId,
+    new Date(selectedDay),
+    req.body,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -31,15 +38,47 @@ const updateSession = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const deleteSession = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+const bookTimeSlot = catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.user;
-  const result = await sessionService.deleteSession(id, userId);
+  const { coachId, selectedDay, startTime } = req.body;
+
+  const result = await sessionService.bookTimeSlot({
+    coachId,
+    selectedDay: new Date(selectedDay),
+    startTime,
+    clientId: userId,
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Session deleted successfully',
+    message: 'Time slot booked successfully',
+    data: result,
+  });
+});
+
+const deleteSession = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.user;
+  const { selectedDay } = req.query;
+
+  let result;
+  if (selectedDay) {
+    // Delete specific daily session
+    result = await sessionService.deleteSession(
+      userId,
+      new Date(selectedDay as string),
+    );
+  } else {
+    // Delete entire session document
+    result = await sessionService.deleteSession(userId);
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: selectedDay
+      ? 'Daily session deleted successfully'
+      : 'Session deleted successfully',
     data: result,
   });
 });
@@ -55,15 +94,25 @@ const getUserSessions = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
-const getSessionById = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await sessionService.getSessionById(id);
+const getRecommendedCoach = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.user;
+  const result = await sessionService.getRecommendedCoach(userId, req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Session retrieved successfully',
+    message: 'Coach retrieved successfully',
+    data: result,
+  });
+});
+const getCoach = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await sessionService.getCoach(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Coach retrieved successfully',
     data: result,
   });
 });
@@ -79,32 +128,39 @@ const getAllSessions = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAvailableTimeSlots = catchAsync(async (req: Request, res: Response) => {
-  const { coachId, selectedDay } = req.query;
+const getAvailableTimeSlots = catchAsync(
+  async (req: Request, res: Response) => {
+    const { coachId, selectedDay } = req.query;
 
-  if (!coachId || !selectedDay) {
-    throw new Error('Coach ID and selected day are required');
-  }
+    if (!coachId || !selectedDay) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Coach ID and selected day are required',
+      );
+    }
 
-  const result = await sessionService.getAvailableTimeSlots(
-    coachId as string,
-    new Date(selectedDay as string)
-  );
+    const result = await sessionService.getAvailableTimeSlots(
+      coachId as string,
+      new Date(selectedDay as string),
+    );
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Available time slots retrieved successfully',
-    data: result,
-  });
-});
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Available time slots retrieved successfully',
+      data: result,
+    });
+  },
+);
 
 export const sessionController = {
   createSession,
   updateSession,
+  bookTimeSlot,
   deleteSession,
   getUserSessions,
-  getSessionById,
   getAllSessions,
-  getAvailableTimeSlots
+  getAvailableTimeSlots,
+  getRecommendedCoach,
+  getCoach
 };

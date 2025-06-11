@@ -8,43 +8,54 @@ import { sessionValidation } from './session.validation';
 const sessionRoutes = express.Router();
 
 sessionRoutes
+  // Create or add new date to session
   .post(
     '/',
     auth(USER_ROLE.COACH),
     validateRequest(sessionValidation.createSessionValidationSchema),
     sessionController.createSession,
   )
+
+  // Update session (requires selectedDay in body to update specific daily session)
   .patch(
-    '/:id',
+    '/',
     auth(USER_ROLE.COACH),
     validateRequest(sessionValidation.updateSessionValidationSchema),
     sessionController.updateSession,
   )
-  .delete(
-    '/:id',
-    auth(USER_ROLE.COACH),
-    sessionController.deleteSession,
+
+  // Book a time slot (for clients)
+  .post(
+    '/book',
+    auth(USER_ROLE.CLIENT),
+    validateRequest(sessionValidation.bookTimeSlotValidationSchema),
+    sessionController.bookTimeSlot,
+  )
+
+  // Delete session (query param selectedDay to delete specific date, otherwise deletes entire session)
+  .delete('/', auth(USER_ROLE.COACH), sessionController.deleteSession)
+
+  // Get coach's sessions
+  .get('/my-sessions', auth(USER_ROLE.COACH), sessionController.getUserSessions)
+  .get(
+    '/recommended-coach',
+    auth(USER_ROLE.CLIENT),
+    sessionController.getRecommendedCoach,
   )
   .get(
-    '/my-sessions',
-    auth(USER_ROLE.COACH),
-    sessionController.getUserSessions,
+    '/recommended-coach/:id',
+    auth(USER_ROLE.CLIENT),
+    sessionController.getCoach,
   )
+
+  // Get available time slots for a specific coach and date
   .get(
     '/available-slots',
     auth(USER_ROLE.CLIENT, USER_ROLE.COACH),
     sessionController.getAvailableTimeSlots,
   )
 
-  .get(
-    '/:id',
-    auth(USER_ROLE.CLIENT, USER_ROLE.COACH),
-    sessionController.getSessionById,
-  )
-  .get(
-    '/',
-    auth(USER_ROLE.CLIENT, USER_ROLE.ADMIN),
-    sessionController.getAllSessions,
-  );
+  // Get all sessions (admin access)
+  .get('/', auth(USER_ROLE.ADMIN), sessionController.getAllSessions);
 
 export default sessionRoutes;

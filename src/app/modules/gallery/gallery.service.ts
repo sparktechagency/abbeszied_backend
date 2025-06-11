@@ -2,33 +2,35 @@ import httpStatus from "http-status";
 import AppError from "../../error/AppError";
 import { Gallery } from "./gallery.model";
 // ============= UPDATED SERVICE (Using MongoDB ObjectIds) =============
-const addToGallery = async (userId: string, payload: { image: string }) => {
-  if (!payload.image) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Image is required');
+const addToGallery = async (
+  userId: string,
+  payload: { images: string[] }
+) => {
+  if (!payload.images || !Array.isArray(payload.images) || payload.images.length === 0) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'At least one image is required');
   }
 
   const gallery = await Gallery.findOne({ userId });
 
+  const imageEntries = payload.images.map((img) => ({
+    url: img,
+    uploadedAt: new Date(),
+  }));
+
   if (gallery) {
-    // Add image with automatic ObjectId generation
-    gallery.images.push({
-      url: payload.image,
-      uploadedAt: new Date()
-    });
+    gallery.images.push(...imageEntries);
     await gallery.save();
     return gallery;
   } else {
     const newGallery = new Gallery({
       userId,
-      images: [{
-        url: payload.image,
-        uploadedAt: new Date()
-      }],
+      images: imageEntries,
     });
     await newGallery.save();
     return newGallery;
   }
 };
+
 
 const getGallery = async (userId: string) => {
   const gallery = await Gallery.findOne({ userId }).populate('userId', 'name email');

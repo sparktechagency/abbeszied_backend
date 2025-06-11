@@ -13,7 +13,7 @@ const galleryRoutes = express.Router();
 galleryRoutes.post(
   '/',
   auth(USER_ROLE.COACH),
-  upload.single('image'),
+  upload.fields([{ name: 'images', maxCount: 5 }]),
   parseData(),
   GalleryController.addGalleryImages,
 );
@@ -36,7 +36,7 @@ galleryRoutes.get(
 galleryRoutes.patch(
   '/image/:imageId',
   auth(USER_ROLE.COACH),
-  upload.single('image'),
+  upload.fields([{ name: 'images', maxCount: 5 }]),
   parseData(),
   GalleryController.updateGalleryImage,
 );

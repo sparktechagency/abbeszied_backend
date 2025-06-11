@@ -3,8 +3,9 @@ import { Types } from 'mongoose';
 export interface IWorkHistory {
   companyName: string;
   designation: string;
-  startDate: Date;
-  endDate: Date;
+  startDate?: Date;
+  endDate?: Date;
+  currentWork?: boolean;
   userId: Types.ObjectId;
 }
 

@@ -29,10 +29,6 @@ const userSchema = new Schema<TUser>(
       type: String,
       default: '',
     },
-    language: {
-      type: [String],
-      default: [],
-    },
     bio: {
       type: String,
       default: '',
@@ -59,7 +55,10 @@ const userSchema = new Schema<TUser>(
       type: [String],
       default: undefined,
     },
-  
+    interests: {
+      type: [String],
+      default: undefined,
+    },
     stripeConnectedAcount: {
       type: String,
       default: '',
