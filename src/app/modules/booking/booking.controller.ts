@@ -4,10 +4,10 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { bookingService } from './booking.service';
 
-
 const createPaymentIntent = catchAsync(async (req, res) => {
   const { userId } = req.user;
-  const { coachId, sessionId, selectedDay, startTime, endTime, price } = req.body;
+  const { coachId, sessionId, selectedDay, startTime, endTime, price } =
+    req.body;
 
   const result = await bookingService.createPaymentIntent({
     coachId,
@@ -27,9 +27,7 @@ const createPaymentIntent = catchAsync(async (req, res) => {
   });
 });
 
-
-
-const getUserBookings = catchAsync(async (req: Request, res: Response) => {
+const getUserBookings = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const result = await bookingService.getUserBookings(userId, req.query);
 
@@ -37,11 +35,12 @@ const getUserBookings = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User bookings fetched successfully',
-    data: result,
+    data: result.bookings,
+    meta: result.meta,
   });
 });
 
-const getCoachBookings = catchAsync(async (req: Request, res: Response) => {
+const getCoachBookings = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const result = await bookingService.getCoachBookings(userId, req.query);
 
@@ -53,7 +52,7 @@ const getCoachBookings = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getBookingById = catchAsync(async (req: Request, res: Response) => {
+const getBookingById = catchAsync(async (req, res) => {
   const { userId, role } = req.user;
   const { bookingId } = req.params;
 
@@ -67,7 +66,7 @@ const getBookingById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const cancelBooking = catchAsync(async (req: Request, res: Response) => {
+const cancelBooking = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const { bookingId } = req.params;
   const { reason } = req.body;
@@ -82,7 +81,7 @@ const cancelBooking = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const completeBooking = catchAsync(async (req: Request, res: Response) => {
+const completeBooking = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const { bookingId } = req.params;
 
@@ -95,6 +94,25 @@ const completeBooking = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const rescheduleBooking = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const { bookingId } = req.params;
+  const { newSelectedDay, newStartTime, newEndTime, reason } = req.body;
+
+  const result = await bookingService.rescheduleBooking(bookingId, userId, {
+    newSelectedDay,
+    newStartTime,
+    newEndTime,
+    reason,
+  });
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Booking rescheduled successfully',
+    data: result,
+  });
+});
 
 export const bookingController = {
   createPaymentIntent,
@@ -103,57 +121,8 @@ export const bookingController = {
   getBookingById,
   cancelBooking,
   completeBooking,
+  rescheduleBooking,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // const bookTimeSlot = catchAsync(async (req: Request, res: Response) => {
 //   const { userId } = req.user;

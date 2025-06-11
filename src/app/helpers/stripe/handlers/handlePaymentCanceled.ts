@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { Booking } from '../../modules/booking/booking.models';
+import { Booking } from '../../../modules/booking/booking.models';
 
 // Handle canceled payment
 const handlePaymentCanceled = async (paymentIntent: Stripe.PaymentIntent) => {

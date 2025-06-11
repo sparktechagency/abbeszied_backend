@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import path from 'path';
-import handleStripeWebhook from './app/helpers/handleStripeWebhook'; // Your webhook handler
+import handleStripeWebhook from './app/helpers/stripe/handleStripeWebhook'; // Your webhook handler
 
 // Import your other middleware & routers if needed
 import globalErrorHandler from './app/middleware/globalErrorhandler';

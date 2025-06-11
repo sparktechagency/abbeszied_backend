@@ -1,5 +1,11 @@
 import { model, Schema } from 'mongoose';
-import { BookingStatus, IBooking, PaymentStatus } from './booking.interface';
+import {
+  BookingStatus,
+  IBooking,
+  PaymentStatus,
+  SessionStatus,
+  SessionType,
+} from './booking.interface';
 
 const bookingSchema = new Schema<IBooking>(
   {
@@ -34,6 +40,10 @@ const bookingSchema = new Schema<IBooking>(
       type: Number,
       required: true,
     },
+    sessionPackage: {
+      type: String,
+      default: SessionType.TRIAL,
+    },
     bookingStatus: {
       type: String,
       enum: Object.values(BookingStatus),
@@ -49,6 +59,25 @@ const bookingSchema = new Schema<IBooking>(
     },
     cancellationReason: {
       type: String,
+    },
+    rescheduleReason: {
+      type: String,
+    },
+    isRescheduled: {
+      type: Boolean,
+      default: false,
+    },
+    rescheduleCount: {
+      type: Number,
+      default: 0,
+    },
+    lastRescheduledAt: {
+      type: Date,
+    },
+    sessionStatus: {
+      type: String,
+      enum: Object.values(SessionStatus),
+      default: SessionStatus.PENDING,
     },
   },
   {

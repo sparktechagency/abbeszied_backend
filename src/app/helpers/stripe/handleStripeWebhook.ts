@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import colors from 'colors';
-import config from '../config';
-import stripe from '../config/stripe.config';
-import AppError from '../error/AppError';
+import config from '../../config';
+import stripe from '../../config/stripe.config';
+import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
-import { logger } from '../utils/logger';
+import { logger } from '../../utils/logger';
 import handlePaymentSuccess from './handlers/handlePaymentSuccess';
 import handleCheckoutExpired from './handlers/handleCheckoutExpired';
 import handlePaymentFailed from './handlers/handlePaymentFailed';

@@ -1,5 +1,4 @@
 import express from 'express';
-
 import auth from '../../middleware/auth';
 import { USER_ROLE } from '../user/user.constants';
 import validateRequest from '../../middleware/validateRequest';
@@ -17,43 +16,50 @@ bookingRoutes
     '/create-payment-intent',
     auth(USER_ROLE.CLIENT),
     validateRequest(bookingValidation.createBookingSchema),
-    bookingController.createPaymentIntent
+    bookingController.createPaymentIntent,
   )
-  
+
   // Get user bookings
   .get(
     '/my-bookings',
     auth(USER_ROLE.CLIENT),
-    bookingController.getUserBookings
+    bookingController.getUserBookings,
   )
-  
+
   // Get coach bookings
   .get(
     '/coach-bookings',
     auth(USER_ROLE.COACH),
-    bookingController.getCoachBookings
+    bookingController.getCoachBookings,
   )
-  
+
   // Get single booking
   .get(
     '/:bookingId',
     auth(USER_ROLE.CLIENT, USER_ROLE.COACH),
-    bookingController.getBookingById
+    bookingController.getBookingById,
   )
-  
+
   // Cancel booking
   .patch(
     '/cancel/:bookingId',
     auth(USER_ROLE.CLIENT),
     validateRequest(bookingValidation.cancelBookingSchema),
-    bookingController.cancelBooking
+    bookingController.cancelBooking,
   )
-  
+
   // Complete booking (for coaches)
   .patch(
     '/complete/:bookingId',
     auth(USER_ROLE.COACH),
-    bookingController.completeBooking
+    bookingController.completeBooking,
+  )
+  // Reschedule booking
+  .patch(
+    '/reschedule/:bookingId',
+    auth(USER_ROLE.CLIENT),
+    validateRequest(bookingValidation.rescheduleBookingSchema),
+    bookingController.rescheduleBooking,
   );
 
 export default bookingRoutes;

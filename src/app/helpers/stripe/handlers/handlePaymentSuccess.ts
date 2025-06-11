@@ -1,10 +1,10 @@
 import Stripe from 'stripe';
-import { Booking } from '../../modules/booking/booking.models';
+import { Booking } from '../../../modules/booking/booking.models';
 import {
   BookingStatus,
   PaymentStatus,
-} from '../../modules/booking/booking.interface';
-import { Session } from '../../modules/session/session.models';
+} from '../../../modules/booking/booking.interface';
+import { Session } from '../../../modules/session/session.models';
 
 // ✅ Updated to use Checkout.Session instead of PaymentIntent
 const handlePaymentSuccess = async (

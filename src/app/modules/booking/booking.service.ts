@@ -6,26 +6,13 @@ import { Session } from '../session/session.models';
 import {
   BookingStatus,
   ICreateBookingPayload,
+  IRescheduleBookingPayload,
   PaymentStatus,
+  SessionStatus,
 } from './booking.interface';
 import { Booking } from './booking.models';
 import stripe from '../../config/stripe.config';
-
-// Helper function to convert 12-hour format to 24-hour format
-const convertTo24Hour = (time12h: string): string => {
-  const [time, modifier] = time12h.split(' ');
-  let [hours, minutes] = time.split(':');
-
-  if (hours === '12') {
-    hours = '00';
-  }
-
-  if (modifier === 'PM' || modifier === 'pm') {
-    hours = (parseInt(hours, 10) + 12).toString();
-  }
-
-  return `${hours.padStart(2, '0')}:${minutes}`;
-};
+import QueryBuilder from '../../builder/QueryBuilder';
 
 // Helper function to convert 24-hour format to 12-hour format
 const convertTo12Hour = (time24h: string): string => {
@@ -34,49 +21,6 @@ const convertTo12Hour = (time24h: string): string => {
   const ampm = hour >= 12 ? 'PM' : 'AM';
   const hour12 = hour % 12 || 12;
   return `${hour12}:${minutes} ${ampm}`;
-};
-
-// Helper function to get dates for next months based on day names
-const getDatesByDayNames = (dayNames: string[], months: number = 2): Date[] => {
-  const dayMapping: { [key: string]: number } = {
-    sunday: 0,
-    sun: 0,
-    monday: 1,
-    mon: 1,
-    tuesday: 2,
-    tue: 2,
-    wednesday: 3,
-    wed: 3,
-    thursday: 4,
-    thu: 4,
-    friday: 5,
-    fri: 5,
-    saturday: 6,
-    sat: 6,
-  };
-
-  const dates: Date[] = [];
-  const today = new Date();
-  const endDate = new Date();
-  endDate.setMonth(today.getMonth() + months);
-
-  // Convert day names to numbers
-  const targetDays = dayNames
-    .map((day) => dayMapping[day.toLowerCase()])
-    .filter((day) => day !== undefined);
-
-  // Generate dates for the next specified months
-  for (
-    let date = new Date(today);
-    date <= endDate;
-    date.setDate(date.getDate() + 1)
-  ) {
-    if (targetDays.includes(date.getDay())) {
-      dates.push(new Date(date));
-    }
-  }
-
-  return dates;
 };
 
 // // Helper function to get package session count
@@ -90,65 +34,6 @@ const getDatesByDayNames = (dayNames: string[], months: number = 2): Date[] => {
 //   return packageCounts[packageType] || 1;
 // };
 
-// Book a time slot
-const bookTimeSlot = async (payload: {
-  coachId: string;
-  selectedDay: Date;
-  startTime: string;
-  clientId: string;
-}) => {
-  const session = await Session.findOne({
-    coachId: new Types.ObjectId(payload.coachId),
-  });
-
-  if (!session) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
-  }
-
-  // Convert time to 24-hour format if needed
-  let startTime24h = payload.startTime;
-  if (
-    payload.startTime.includes('AM') ||
-    payload.startTime.includes('PM') ||
-    payload.startTime.includes('am') ||
-    payload.startTime.includes('pm')
-  ) {
-    startTime24h = convertTo24Hour(payload.startTime);
-  }
-
-  const result = await Session.findOneAndUpdate(
-    {
-      coachId: new Types.ObjectId(payload.coachId),
-      'dailySessions.selectedDay': payload.selectedDay,
-      'dailySessions.timeSlots.startTime': startTime24h,
-      'dailySessions.timeSlots.isBooked': false,
-    },
-    {
-      $set: {
-        'dailySessions.$[session].timeSlots.$[slot].isBooked': true,
-        'dailySessions.$[session].timeSlots.$[slot].clientId':
-          new Types.ObjectId(payload.clientId),
-      },
-      $inc: { bookedSessions: 1 },
-    },
-    {
-      arrayFilters: [
-        { 'session.selectedDay': payload.selectedDay },
-        { 'slot.startTime': startTime24h, 'slot.isBooked': false },
-      ],
-      new: true,
-    },
-  );
-  console.log('booking data', result);
-  if (!result) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Time slot not available or already booked',
-    );
-  }
-
-  return result;
-};
 // Create payment intent and temporary booking
 const createPaymentIntent = async (
   payload: ICreateBookingPayload & { userId: string },
@@ -283,32 +168,218 @@ const createPaymentIntent = async (
     );
   }
 };
-// Get user bookings
-const getUserBookings = async (userId: string, query: any) => {
-  const {
-    page = 1,
-    limit = 10,
-    status,
-    sortBy = 'createdAt',
-    sortOrder = 'desc',
-  } = query;
 
-  const filter: any = { userId: new Types.ObjectId(userId) };
-  if (status) {
-    filter.bookingStatus = status;
+// Reschedule booking
+const rescheduleBooking = async (
+  bookingId: string,
+  userId: string,
+  payload: IRescheduleBookingPayload,
+) => {
+  const { newSelectedDay, newStartTime, newEndTime, reason } = payload;
+
+  // Find the existing booking
+  const existingBooking = await Booking.findOne({
+    _id: bookingId,
+    userId: new Types.ObjectId(userId),
+  });
+
+  if (!existingBooking) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
   }
 
-  const sortOptions: any = {};
-  sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+  // Check if booking can be rescheduled
+  if (existingBooking.bookingStatus === BookingStatus.CANCELLED) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Cannot reschedule cancelled booking',
+    );
+  }
 
-  const bookings = await Booking.find(filter)
-    .populate('coachId', 'name email profileImage')
-    .populate('sessionId', 'language pricePerSession')
-    .sort(sortOptions)
-    .skip((page - 1) * limit)
-    .limit(limit);
+  if (existingBooking.bookingStatus === BookingStatus.COMPLETED) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Cannot reschedule completed booking',
+    );
+  }
 
-  const total = await Booking.countDocuments(filter);
+  if (existingBooking.paymentStatus !== PaymentStatus.PAID) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Cannot reschedule unpaid booking',
+    );
+  }
+
+  // Check if current booking is within 24 hours (no reschedule allowed)
+  const currentBookingDateTime = new Date(existingBooking.selectedDay);
+  const [currentHours, currentMinutes] = existingBooking.startTime.split(':');
+  currentBookingDateTime.setHours(
+    parseInt(currentHours),
+    parseInt(currentMinutes),
+  );
+
+  const now = new Date();
+  const timeDifferenceFromCurrent =
+    currentBookingDateTime.getTime() - now.getTime();
+  const hoursUntilCurrentBooking = timeDifferenceFromCurrent / (1000 * 60 * 60);
+
+  if (hoursUntilCurrentBooking < 24) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Cannot reschedule booking within 24 hours of scheduled time',
+    );
+  }
+
+  // Check if new booking time is at least 24 hours from now
+  const newBookingDateTime = new Date(newSelectedDay);
+  const [newHours, newMinutes] = newStartTime.split(':');
+  newBookingDateTime.setHours(parseInt(newHours), parseInt(newMinutes));
+
+  const timeDifferenceToNew = newBookingDateTime.getTime() - now.getTime();
+  console.log(timeDifferenceToNew);
+  const hoursUntilNewBooking = timeDifferenceToNew / (1000 * 60 * 60);
+
+  if (hoursUntilNewBooking < 24) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'New booking time must be at least 24 hours from now',
+    );
+  }
+
+  // Validate that the new time slot is available
+  const isNewSlotAvailable = await Session.findOne({
+    _id: existingBooking.sessionId,
+    coachId: existingBooking.coachId,
+    'dailySessions.selectedDay': new Date(newSelectedDay),
+    'dailySessions.timeSlots.startTime12h': newStartTime,
+    'dailySessions.timeSlots.isBooked': false,
+  });
+
+  if (!isNewSlotAvailable) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'New time slot is not available or already booked',
+    );
+  }
+
+  // Check if there's already a booking for the new slot
+  const conflictingBooking = await Booking.findOne({
+    coachId: existingBooking.coachId,
+    selectedDay: new Date(newSelectedDay),
+    startTime: newStartTime,
+    bookingStatus: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+    _id: { $ne: bookingId }, // Exclude current booking
+  });
+
+  if (conflictingBooking) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'New time slot already has a booking',
+    );
+  }
+
+  // Start transaction to ensure atomicity
+  const session = await Booking.startSession();
+  session.startTransaction();
+
+  try {
+    // Free up the old time slot
+    await Session.findOneAndUpdate(
+      {
+        _id: existingBooking.sessionId,
+        'dailySessions.selectedDay': existingBooking.selectedDay,
+        'dailySessions.timeSlots.startTime12h': existingBooking.startTime,
+      },
+      {
+        $set: {
+          'dailySessions.$[session].timeSlots.$[slot].isBooked': false,
+        },
+        $unset: {
+          'dailySessions.$[session].timeSlots.$[slot].clientId': '',
+        },
+      },
+      {
+        arrayFilters: [
+          { 'session.selectedDay': existingBooking.selectedDay },
+          { 'slot.startTime12h': existingBooking.startTime },
+        ],
+        session,
+      },
+    );
+
+    // Book the new time slot
+    await Session.findOneAndUpdate(
+      {
+        _id: existingBooking.sessionId,
+        'dailySessions.selectedDay': new Date(newSelectedDay),
+        'dailySessions.timeSlots.startTime12h': newStartTime,
+      },
+      {
+        $set: {
+          'dailySessions.$[session].timeSlots.$[slot].isBooked': true,
+          'dailySessions.$[session].timeSlots.$[slot].clientId': userId,
+        },
+      },
+      {
+        arrayFilters: [
+          { 'session.selectedDay': new Date(newSelectedDay) },
+          { 'slot.startTime12h': newStartTime },
+        ],
+        session,
+      },
+    );
+
+    // Update the booking with new details
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingId,
+      {
+        selectedDay: new Date(newSelectedDay),
+        startTime: newStartTime,
+        endTime: newEndTime,
+        rescheduleReason: reason,
+        isRescheduled: true,
+        rescheduleCount: (existingBooking.rescheduleCount || 0) + 1,
+        lastRescheduledAt: new Date(),
+      },
+      { new: true, session },
+    );
+
+    await session.commitTransaction();
+
+    return {
+      ...updatedBooking?.toObject(),
+      startTime12h: convertTo12Hour(updatedBooking?.startTime || ''),
+      endTime12h: convertTo12Hour(updatedBooking?.endTime || ''),
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+};
+// Get user bookings
+const getUserBookings = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  const filter: any = { userId: new Types.ObjectId(userId) };
+
+  const queryBuilder = new QueryBuilder(
+    Booking.find(filter)
+      .populate('coachId', 'name email image')
+      .populate('sessionId', 'language pricePerSession')
+      .select('coachId selectedDay startTime endTime sessionStatus sessionId'),
+    query,
+  );
+
+  const bookings = await queryBuilder
+    .fields()
+    .filter()
+    .paginate()
+    .sort()
+    .modelQuery.exec();
+
+  const meta = await queryBuilder.countTotal();
 
   // Convert times to 12-hour format for display
   const bookingsWithFormattedTime = bookings.map((booking) => ({
@@ -319,41 +390,32 @@ const getUserBookings = async (userId: string, query: any) => {
 
   return {
     bookings: bookingsWithFormattedTime,
-    pagination: {
-      page,
-      limit,
-      total,
-      pages: Math.ceil(total / limit),
-    },
+    meta,
   };
 };
 
 // Get coach bookings
-const getCoachBookings = async (coachId: string, query: any) => {
-  const {
-    page = 1,
-    limit = 10,
-    status,
-    sortBy = 'createdAt',
-    sortOrder = 'desc',
-  } = query;
-
+const getCoachBookings = async (
+  coachId: string,
+  query: Record<string, unknown>,
+) => {
   const filter: any = { coachId: new Types.ObjectId(coachId) };
-  if (status) {
-    filter.bookingStatus = status;
-  }
 
-  const sortOptions: any = {};
-  sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+  const queryBuilder = new QueryBuilder(
+    Booking.find(filter)
+      .populate('userId', 'name email profileImage')
+      .populate('sessionId', 'language pricePerSession'),
+    query,
+  );
 
-  const bookings = await Booking.find(filter)
-    .populate('userId', 'name email profileImage')
-    .populate('sessionId', 'language pricePerSession')
-    .sort(sortOptions)
-    .skip((page - 1) * limit)
-    .limit(limit);
+  const bookings = await queryBuilder
+    .fields()
+    .filter()
+    .paginate()
+    .sort()
+    .modelQuery.exec();
 
-  const total = await Booking.countDocuments(filter);
+  const meta = await queryBuilder.countTotal();
 
   // Convert times to 12-hour format for display
   const bookingsWithFormattedTime = bookings.map((booking) => ({
@@ -364,12 +426,7 @@ const getCoachBookings = async (coachId: string, query: any) => {
 
   return {
     bookings: bookingsWithFormattedTime,
-    pagination: {
-      page,
-      limit,
-      total,
-      pages: Math.ceil(total / limit),
-    },
+    meta,
   };
 };
 
@@ -529,7 +586,7 @@ const completeBooking = async (bookingId: string, coachId: string) => {
 
   const updatedBooking = await Booking.findByIdAndUpdate(
     bookingId,
-    { bookingStatus: BookingStatus.COMPLETED },
+    { sessionStatus: SessionStatus.COMPLETED },
     { new: true },
   );
 
@@ -560,6 +617,7 @@ export const bookingService = {
   cancelBooking,
   completeBooking,
   cleanupExpiredBookings,
+  rescheduleBooking,
 };
 // export const bookingService = {
 //   bookTimeSlot,

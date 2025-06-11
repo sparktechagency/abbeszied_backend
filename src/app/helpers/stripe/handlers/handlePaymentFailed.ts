@@ -1,6 +1,6 @@
 import Stripe from "stripe";
-import { Booking } from "../../modules/booking/booking.models";
-import { PaymentStatus } from "../../modules/booking/booking.interface";
+import { Booking } from "../../../modules/booking/booking.models";
+import { PaymentStatus } from "../../../modules/booking/booking.interface";
 
 // Handle failed payment
 const handlePaymentFailed = async (paymentIntent: Stripe.PaymentIntent) => {

@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
 import AppError from '../../error/AppError';
-import { ISession, IDailySession, SessionPackage } from './session.interface';
+import { ISession, IDailySession } from './session.interface';
 import { Session } from './session.models';
 import { User } from '../../modules/user/user.models';
 import { Types } from 'mongoose';
@@ -217,7 +217,6 @@ const updateSession = async (
     timeSlots?: any[];
     language?: string[];
     isActive?: boolean;
-    sessionPackage?: SessionPackage;
   },
 ) => {
   const session = await Session.findOne({

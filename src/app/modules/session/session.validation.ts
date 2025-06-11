@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { SessionPackage } from './session.interface';
 
 // Time validation for both 12-hour and 24-hour formats
 const timeFormatRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$|^([0-1]?[0-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$/;

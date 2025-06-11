@@ -16,8 +16,22 @@ const cancelBookingSchema = z.object({
     reason: z.string().optional(),
   }),
 });
-
+const rescheduleBookingSchema = z.object({
+    body: z.object({
+      newSelectedDay: z.string({
+        required_error: 'New selected day is required',
+      }),
+      newStartTime: z.string({
+        required_error: 'New start time is required',
+      }),
+      newEndTime: z.string({
+        required_error: 'New end time is required',
+      }),
+      reason: z.string().optional(),
+    }),
+  });
 export const bookingValidation = {
   createBookingSchema,
   cancelBookingSchema,
+  rescheduleBookingSchema,
 };

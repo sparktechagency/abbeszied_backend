@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
-import { Booking } from '../../modules/booking/booking.models';
-import { Session } from '../../modules/session/session.models'; // Adjust path as needed
+import { Booking } from '../../../modules/booking/booking.models';
+import { Session } from '../../../modules/session/session.models'; // Adjust path as needed
 
 const handleCheckoutExpired = async (session: Stripe.Checkout.Session) => {
   try {

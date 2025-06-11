@@ -1,11 +1,5 @@
 import { Types } from 'mongoose';
 
-export enum SessionPackage {
-  SINGLE = 'single',
-  PACKAGE_4 = 'package_4',
-  PACKAGE_8 = 'package_8',
-  PACKAGE_12 = 'package_12'
-}
 
 export interface ITimeSlot {
   startTime: string; // 24-hour format
