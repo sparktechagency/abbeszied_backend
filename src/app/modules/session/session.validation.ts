@@ -40,12 +40,6 @@ const updateSessionValidationSchema = z.object({
         message: 'Price per session must be a positive number',
       })
       .optional(),
-    selectedDay: z
-      .string()
-      .refine((date) => !isNaN(Date.parse(date)), {
-        message: 'Selected day must be a valid date',
-      })
-      .optional(),
     timeSlots: z
       .array(timeSlotSchema)
       .min(1, {

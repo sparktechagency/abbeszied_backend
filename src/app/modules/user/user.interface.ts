@@ -18,6 +18,7 @@ export interface TClientCreate {
   address: string;
   bio?: string;
   introVideo?: string;
+  verifiedBadge: boolean;
   role: (typeof USER_ROLE)[keyof typeof USER_ROLE];
 }
 

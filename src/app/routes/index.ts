@@ -5,7 +5,6 @@ import { authRoutes } from '../modules/auth/auth.route';
 import settingsRouter from '../modules/settings/setting.route';
 import notificationRoutes from '../modules/notification/notification.route';
 import { ruleRoutes } from '../modules/rule/rule.routes';
-import favouriteRoutes from '../modules/favourite/favourite.route';
 import { paymentRoutes } from '../modules/payment/payment.route';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
@@ -19,6 +18,7 @@ import { reportRoutes } from '../modules/report/report.route';
 import { chatRoutes } from '../modules/chat/chat.route';
 import { messageRoutes } from '../modules/message/message.route';
 import bookingRoutes from '../modules/booking/booking.route';
+import { FavouritdRouter } from '../modules/favourit/favourit.router';
 
 const router = Router();
 
@@ -41,7 +41,7 @@ const moduleRoutes = [
   },
   {
     path: '/favourite',
-    route: favouriteRoutes,
+    route: FavouritdRouter,
   },
   {
     path: '/setting',

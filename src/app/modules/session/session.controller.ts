@@ -22,13 +22,7 @@ const createSession = catchAsync(async (req: Request, res: Response) => {
 
 const updateSession = catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.user;
-  const { selectedDay } = req.body;
-
-  const result = await sessionService.updateSession(
-    userId,
-    new Date(selectedDay),
-    req.body,
-  );
+  const result = await sessionService.updateSession(userId, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -44,7 +38,7 @@ const bookTimeSlot = catchAsync(async (req: Request, res: Response) => {
 
   const result = await sessionService.bookTimeSlot({
     coachId,
-    selectedDay: new Date(selectedDay),
+    selectedDay,
     startTime,
     clientId: userId,
   });
@@ -162,5 +156,5 @@ export const sessionController = {
   getAllSessions,
   getAvailableTimeSlots,
   getRecommendedCoach,
-  getCoach
+  getCoach,
 };

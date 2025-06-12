@@ -1,13 +1,5 @@
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
-import getUserDetailsFromToken from './app/helpers/getUserDetailsFromToken';
-import AppError from './app/error/AppError';
-import httpStatus from 'http-status';
-
 const initializeSocketIO = (server: HttpServer) => {
   const io = new Server(server, {
     cors: {

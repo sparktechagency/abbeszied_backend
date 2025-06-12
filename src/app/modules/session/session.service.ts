@@ -5,6 +5,14 @@ import { Session } from './session.models';
 import { User } from '../../modules/user/user.models';
 import { Types } from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { Favourite } from '../favourit/favourit.model';
+import getUserReview from '../../utils/getUserReviews';
+
+const checkIsFavourite = async (sessionId: string, userId: string) => {
+  const favouriteRecord = await Favourite.findOne({ userId, sessionId });
+  const isFavourite = !!favouriteRecord;
+  return isFavourite;
+};
 
 // Helper function to convert 12-hour format to 24-hour format
 const convertTo24Hour = (time12h: string): string => {
@@ -74,24 +82,13 @@ const getDatesByDayNames = (dayNames: string[], months: number = 2): Date[] => {
   return dates;
 };
 
-// // Helper function to get package session count
-// const getPackageSessionCount = (packageType: SessionPackage): number => {
-//   const packageCounts = {
-//     [SessionPackage.SINGLE]: 1,
-//     [SessionPackage.PACKAGE_4]: 4,
-//     [SessionPackage.PACKAGE_8]: 8,
-//     [SessionPackage.PACKAGE_12]: 12
-//   };
-//   return packageCounts[packageType] || 1;
-// };
-
 const createSession = async (payload: {
   coachId: string;
   pricePerSession: number;
+  aboutMe: string;
   selectedDay: string[] | Date; // Can be day names array or single date
   timeSlots: any[];
   language?: string[];
-  // sessionPackage?: SessionPackage;
 }) => {
   const user = await User.IsUserExistById(payload.coachId);
   if (!user) {
@@ -198,6 +195,7 @@ const createSession = async (payload: {
       dailySessions: dailySessions,
       language: payload.language || [],
       coachId: new Types.ObjectId(payload.coachId),
+      aboutMe: payload.aboutMe,
       // sessionPackage: sessionPackage,
       // totalSessions: totalSessions,
       // bookedSessions: 0,
@@ -211,9 +209,10 @@ const createSession = async (payload: {
 
 const updateSession = async (
   coachId: string,
-  selectedDay: Date,
   payload: {
     pricePerSession?: number;
+    aboutMe?: string;
+    selectedDay?: string[] | Date; // Changed to match createSession - can be day names array or single date
     timeSlots?: any[];
     language?: string[];
     isActive?: boolean;
@@ -222,6 +221,7 @@ const updateSession = async (
   const session = await Session.findOne({
     coachId: new Types.ObjectId(coachId),
   });
+
   if (!session) {
     throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
   }
@@ -238,9 +238,31 @@ const updateSession = async (
   if (payload.isActive !== undefined) {
     updateData.isActive = payload.isActive;
   }
+  if (payload.aboutMe !== undefined) {
+    updateData.aboutMe = payload.aboutMe;
+  }
 
-  // Update specific daily session
-  if (payload.timeSlots) {
+  // Handle daily sessions update - following createSession pattern
+  if (payload.selectedDay && payload.timeSlots) {
+    // Determine if it's day names or single date (same logic as createSession)
+    let targetDates: Date[] = [];
+
+    if (Array.isArray(payload.selectedDay)) {
+      // Day names provided - generate dates for next 2 months
+      targetDates = getDatesByDayNames(payload.selectedDay, 2);
+    } else {
+      // Single date provided
+      targetDates = [new Date(payload.selectedDay)];
+    }
+
+    if (targetDates.length === 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'No valid dates found for the provided day names',
+      );
+    }
+
+    // Process time slots (same logic as createSession)
     const processedTimeSlots = payload.timeSlots.map((slot) => {
       let startTime24h: string;
 
@@ -267,51 +289,42 @@ const updateSession = async (
       // Calculate end time (1 hour after start)
       const end = new Date(start.getTime() + 60 * 60 * 1000);
       const endTime24h = end.toTimeString().slice(0, 5);
+      const endTime12h = convertTo12Hour(endTime24h);
 
       return {
         startTime: startTime24h,
         startTime12h: convertTo12Hour(startTime24h),
         endTime: endTime24h,
-        endTime12h: convertTo12Hour(endTime24h),
+        endTime12h: endTime12h,
         isBooked: slot.isBooked || false,
       };
     });
 
-    // Update the specific daily session
-    const result = await Session.findOneAndUpdate(
-      {
-        coachId: new Types.ObjectId(coachId),
-        'dailySessions.selectedDay': selectedDay,
-      },
-      {
-        ...updateData,
-        'dailySessions.$.timeSlots': processedTimeSlots,
-      },
-      { new: true },
-    );
+    // Create new daily sessions (same logic as createSession)
+    const newDailySessions: IDailySession[] = targetDates.map((date) => ({
+      selectedDay: date,
+      timeSlots: processedTimeSlots,
+      isActive: true,
+    }));
 
-    if (!result) {
-      throw new AppError(
-        httpStatus.NOT_FOUND,
-        'Daily session not found for the specified date',
-      );
-    }
-    return result;
+    // REPLACE all daily sessions with new ones (removes previous dates, sets new dates)
+    updateData.dailySessions = newDailySessions;
   }
 
-  // Update only global fields
+  // Update the session
   const result = await Session.findOneAndUpdate(
     { coachId: new Types.ObjectId(coachId) },
     updateData,
     { new: true },
   );
+
   return result;
 };
 
 // Book a time slot
 const bookTimeSlot = async (payload: {
   coachId: string;
-  selectedDay: Date;
+  selectedDay: Date[];
   startTime: string;
   clientId: string;
 }) => {
@@ -438,8 +451,21 @@ const getRecommendedCoach = async (
     .modelQuery.exec();
   const meta = await queryBuilder.countTotal();
 
+  // Process videos with sequential logic
+  const recommended = await Promise.all(
+    result.map(async (session: any, index: number) => {
+      const isFavorite = await checkIsFavourite(session._id, userId);
+      const rating = await getUserReview(session.coachId._id);
+      return {
+        ...session.toObject(),
+        isFavorite,
+        rating,
+      };
+    }),
+  );
+
   return {
-    result,
+    result: recommended,
     meta,
   };
 };
@@ -507,6 +533,7 @@ const getCoach = async (coachId: string) => {
   const result = await Session.findOne({
     coachId: new Types.ObjectId(coachId),
   })
+    .select('pricePerSession coachId')
     .populate('coachId')
     .lean();
 

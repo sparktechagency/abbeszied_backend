@@ -60,6 +60,10 @@ const sessionSchema = new Schema<ISession>(
       type: Number,
       required: true,
     },
+    aboutMe: {
+      type: String,
+      required: true,
+    },
     dailySessions: {
       type: [dailySessionSchema],
       default: [],

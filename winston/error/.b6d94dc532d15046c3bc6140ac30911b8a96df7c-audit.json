@@ -6,44 +6,34 @@
     "auditLog": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\.b6d94dc532d15046c3bc6140ac30911b8a96df7c-audit.json",
     "files": [
         {
-            "date": 1749568742727,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\10-06-2025-21-error.log",
-            "hash": "78bfa36d93ce331bfefb87c79209f87e01b5ec9aeb691237ab7b07c08d386c33"
+            "date": 1749698761705,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\12-06-2025-09-error.log",
+            "hash": "866847bc08635f6bf314c4c4d8c91df23588ab1c12387784ba4562497c8ca949"
         },
         {
-            "date": 1749571213542,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\10-06-2025-22-error.log",
-            "hash": "6cfdb4fcef86c5fdd74f4b6388117f6b225271ac7213de897bf55e9bcef8d7d1"
+            "date": 1749725743379,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\12-06-2025-16-error.log",
+            "hash": "d46696a398fc82126fa48c1d02d183a7e47859af3a95e4b5d5a5e3332ec9eca8"
         },
         {
-            "date": 1749636735930,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\11-06-2025-16-error.log",
-            "hash": "ff18001f07ee9f6e799b6404c9bcb0fe7ab88a928384e8e8b1882cb468118101"
+            "date": 1749726119504,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\12-06-2025-17-error.log",
+            "hash": "2525043922e7c6d5323ac217af6efe76f76d59c211413fc35685e171ba4cea1d"
         },
         {
-            "date": 1749639642979,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\11-06-2025-17-error.log",
-            "hash": "89e7e707f56c4363c21735c66511b15ad2626243df2d3dff6390c8eba29bd6ae"
+            "date": 1749730197862,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\12-06-2025-18-error.log",
+            "hash": "13e1e8c68f693f6a87aa6555338baf688d3ba3708f63743c836606d2ffd73202"
         },
         {
-            "date": 1749643525994,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\11-06-2025-18-error.log",
-            "hash": "55ca686e5ae0b86be03d9c1c5f7bd34f358e0389954fb751e4bcca255dd5cc6f"
+            "date": 1749740523616,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\12-06-2025-21-error.log",
+            "hash": "c9666f3a0af472477b8f987ea7b4586d775a984a1eb42bc02cee71718b5318d5"
         },
         {
-            "date": 1749647429290,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\11-06-2025-19-error.log",
-            "hash": "749b61fd94b9f2aff1375d6e9e4c0057c536c79b90439b1bc1bc308da1fc1a87"
-        },
-        {
-            "date": 1749650470948,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\11-06-2025-20-error.log",
-            "hash": "0a072035a54d0c800be7a880dd3ab47cf67e651b489971d16b46df2da321be75"
-        },
-        {
-            "date": 1749654261414,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\11-06-2025-21-error.log",
-            "hash": "5966e01591500e421a97bb94770dc3eac313e4b9af0194f9ad0e293e44e08824"
+            "date": 1749744467063,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\12-06-2025-22-error.log",
+            "hash": "8055955a0320718f0615af91c95a962f8c7dd768c35bda39b21b5bc84a2de5bc"
         }
     ],
     "hashType": "sha256"

@@ -8,10 +8,6 @@ import { bookingValidation } from './booking.validation';
 const bookingRoutes = express.Router();
 
 bookingRoutes
-
-  // Book a time slot (for clients)
-  // .post('/book', auth(USER_ROLE.CLIENT), bookingController.bookTimeSlot)
-  // Create payment intent and booking
   .post(
     '/create-payment-intent',
     auth(USER_ROLE.CLIENT),

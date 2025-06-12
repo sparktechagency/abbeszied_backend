@@ -95,7 +95,6 @@ bookingSchema.index({ selectedDay: 1 });
 bookingSchema.index({ bookingStatus: 1 });
 bookingSchema.index({ paymentStatus: 1 });
 bookingSchema.index({ paymentIntentId: 1 });
-bookingSchema.index({ createdAt: 1 });
 
 // Compound indexes
 bookingSchema.index({ userId: 1, bookingStatus: 1 });

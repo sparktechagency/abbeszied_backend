@@ -24,7 +24,7 @@ export interface OTPVerifyAndCreateUserProps {
 
 const createUserToken = async (payload: TCoachCreate) => {
   const { email, role, fullName, cerificates } = payload;
-
+  console.log('payload', payload);
   if (
     !(
       role === USER_ROLE.CLIENT ||
@@ -34,7 +34,9 @@ const createUserToken = async (payload: TCoachCreate) => {
   ) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Invalid data!');
   }
-
+  if (role === USER_ROLE.CLIENT && !payload.interests?.length) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'interests data is required!');
+  }
   // user exist check
   const userExist = await userService.getUserByEmail(email);
 

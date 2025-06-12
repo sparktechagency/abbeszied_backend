@@ -59,8 +59,8 @@ const getSingleProduct = async (id: string) => {
       'name price category description location condition images status sellerId buyerId',
     ) // Field selection
     .populate([
-      { path: 'sellerId', select: 'name email contactNumber location image' },
-      { path: 'buyerId', select: 'name email contactNumber location image' },
+      { path: 'sellerId', select: 'fullName email phone createdAt image' },
+      { path: 'buyerId', select: 'fullName email phone createdAt image' },
     ]);
 
   // Handle case where product doesn't exist

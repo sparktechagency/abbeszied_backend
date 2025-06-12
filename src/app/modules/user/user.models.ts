@@ -75,6 +75,10 @@ const userSchema = new Schema<TUser>(
       type: Boolean,
       default: false,
     },
+    verifiedBadge: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
