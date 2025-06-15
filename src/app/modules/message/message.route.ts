@@ -4,10 +4,11 @@ import auth from '../../middleware/auth';
 import { USER_ROLE } from '../user/user.constants';
 import fileUpload from '../../middleware/fileUpload';
 import parseData from '../../middleware/parseData';
-const upload = fileUpload('./public/uploads/images');
 
+const upload = fileUpload('./public/uploads/images');
 const router = express.Router();
 
+// Existing routes
 router.post(
   '/send-message/:chatId',
   auth(
@@ -20,16 +21,18 @@ router.post(
   parseData(),
   MessageController.sendMessage,
 );
+
 router.get(
-  '/:id',
+  '/:chatId',
   auth(
      USER_ROLE.CLIENT,
      USER_ROLE.COACH,
      USER_ROLE.SUPER_ADMIN,
      USER_ROLE.ADMIN,
    ),
-  MessageController.getAllMessage,
+  MessageController.getMessages,
 );
+
 router.post(
   '/react/:messageId',
   auth(
@@ -40,6 +43,7 @@ router.post(
    ),
   MessageController.addReaction,
 );
+
 router.delete(
   '/delete/:messageId',
   auth(
@@ -49,6 +53,18 @@ router.delete(
      USER_ROLE.ADMIN,
    ),
   MessageController.deleteMessage,
+);
+
+// New route for pin/unpin message
+router.patch(
+  '/pin-unpin/:messageId',
+  auth(
+     USER_ROLE.CLIENT,
+     USER_ROLE.COACH,
+     USER_ROLE.SUPER_ADMIN,
+     USER_ROLE.ADMIN,
+   ),
+  MessageController.pinUnpinMessage,
 );
 
 export const messageRoutes = router;

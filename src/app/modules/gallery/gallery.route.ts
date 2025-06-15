@@ -25,6 +25,8 @@ galleryRoutes.get(
   GalleryController.getGallery,
 );
 
+
+
 // Read - Get all galleries (admin only)
 // galleryRoutes.get(
 //   '/all',

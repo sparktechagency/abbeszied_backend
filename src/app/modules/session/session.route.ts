@@ -47,14 +47,38 @@ sessionRoutes
     auth(USER_ROLE.CLIENT),
     sessionController.getCoach,
   )
-
+  // Read - Get coach's gallery
+  .get(
+    '/coach-gallery/:coachId',
+    auth(USER_ROLE.CLIENT),
+    sessionController.getGallery,
+  )
+  .get(
+    '/coach-reviews/:coachId',
+    auth(USER_ROLE.CLIENT),
+    sessionController.getAllReview,
+  )
+  .get(
+    '/coach-analysis/:coachId',
+    auth(USER_ROLE.CLIENT),
+    sessionController.getAnalysis,
+  )
+  .get(
+    '/coach-certificates/:coachId',
+    auth(USER_ROLE.CLIENT),
+    sessionController.getUserCertificates,
+  )
   // Get available time slots for a specific coach and date
   .get(
     '/available-slots',
     auth(USER_ROLE.CLIENT, USER_ROLE.COACH),
     sessionController.getAvailableTimeSlots,
   )
-
+  .get(
+    '/coach-work-history/:coachId',
+    auth(USER_ROLE.CLIENT),
+    sessionController.getUserWorkHistory,
+  )
   // Get all sessions (admin access)
   .get('/', auth(USER_ROLE.ADMIN), sessionController.getAllSessions);
 

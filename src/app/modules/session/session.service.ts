@@ -432,28 +432,53 @@ const getRecommendedCoach = async (
   }
 
   const userInterests = user.interests || [];
-  const baseQuery =
-    userInterests.length > 0
-      ? Session.find({ 'coachId.category': { $in: userInterests } }).select(
-          'pricePerSession coachId',
-        )
-      : Session.find().select('pricePerSession coachId');
-  baseQuery.populate('coachId', 'name email category image');
 
+  // 2. Build the base query depending on user's interests
+  let baseQuery;
+
+  // Case when user has interests
+  if (userInterests.length > 0) {
+    // Attempt to find sessions where coach's category matches user's interests
+    baseQuery = Session.find({
+      'coachId.category': { $in: userInterests },
+    }).select('pricePerSession coachId');
+  } else {
+    // If no interests, get all sessions
+    baseQuery = Session.find().select('pricePerSession coachId');
+  }
+
+  // 3. Populate the coach information
+  baseQuery = baseQuery.populate('coachId', 'fullName email category image');
+
+  // 4. Execute the base query to check for matching sessions
+  const matchingSessions = await baseQuery.exec();
+
+  // 5. If no sessions matched, get all sessions
+  if (matchingSessions.length === 0) {
+    console.log(
+      'No matching sessions for user interests, returning all sessions',
+    );
+    baseQuery = Session.find().select('pricePerSession coachId');
+    baseQuery = baseQuery.populate('coachId', 'fullName email category image');
+  }
+
+  // 6. Build the query with filters, sorting, pagination, etc.
   const queryBuilder = new QueryBuilder(baseQuery, query);
   const result = await queryBuilder
-    .filter()
-    .sort()
-    .paginate()
-    .fields()
-    .search([])
-    .priceRange()
+    .filter() // Custom filter logic
+    .sort() // Sorting logic
+    .paginate() // Pagination logic
+    .fields() // Select fields
+    .search([]) // Search logic, if necessary
+    .priceRange() // Price range filtering
     .modelQuery.exec();
+
+  // 7. Count total number of sessions after filtering, sorting, etc.
   const meta = await queryBuilder.countTotal();
 
-  // Process videos with sequential logic
+  // 8. Process sessions with additional data (favorite and rating)
   const recommended = await Promise.all(
-    result.map(async (session: any, index: number) => {
+    result.map(async (session: any) => {
       const isFavorite = await checkIsFavourite(session._id, userId);
       const rating = await getUserReview(session.coachId._id);
       return {
@@ -464,6 +489,7 @@ const getRecommendedCoach = async (
     }),
   );
 
+  // 9. Return the final result with metadata
   return {
     result: recommended,
     meta,

@@ -43,7 +43,8 @@ const getAllReview = catchAsync(async (req, res) => {
   });
 });
 const getAnalysis = catchAsync(async (req, res) => {
-  const result = await ReviewService.getReviewAnalysis();
+  const { userId } = req.user;
+  const result = await ReviewService.getReviewAnalysis(userId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

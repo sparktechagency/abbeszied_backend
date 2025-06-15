@@ -25,10 +25,26 @@ const messageSchema = new Schema<IMessage, MessageModel>(
           },
           type: {
                type: String,
-               enum: ['text', 'image'],
+               enum: ['text', 'image', 'doc', 'both'],
                default: 'text',
           },
-          isDeleted: { type: Boolean, default: false, required: true },
+          isDeleted: { 
+               type: Boolean, 
+               default: false, 
+               required: true 
+          },
+          // New pinned message fields
+          isPinned: { 
+               type: Boolean, 
+               default: false 
+          },
+          pinnedBy: { 
+               type: Schema.Types.ObjectId, 
+               ref: 'User' 
+          },
+          pinnedAt: { 
+               type: Date 
+          },
           reactions: [
                {
                     userId: {

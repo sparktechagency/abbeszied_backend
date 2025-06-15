@@ -4,6 +4,9 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { sessionService } from './session.service';
 import AppError from '../../error/AppError';
+import { GalleryService } from '../gallery/gallery.service';
+import { ReviewService } from '../review/review.service';
+import { experienceService } from '../experience/experience.service';
 
 const createSession = catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.user;
@@ -146,7 +149,59 @@ const getAvailableTimeSlots = catchAsync(
     });
   },
 );
+const getGallery = catchAsync(async (req, res) => {
+  const { coachId } = req.params;
+  const result = await GalleryService.getGallery(coachId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Gallery retrieved successfully',
+    data: result,
+  });
+});
+const getAllReview = catchAsync(async (req, res) => {
+  const query = req.query;
+  const { coachId } = req.params;
+  const result = await ReviewService.getReviews(coachId, query);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Review retrieved Successfully',
+    data: result.review,
+    meta: result.meta,
+  });
+});
+const getAnalysis = catchAsync(async (req, res) => {
+  const { coachId } = req.params;
+  const result = await ReviewService.getReviewAnalysis(coachId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Review analysis retrieved Successfully',
+    data: result,
+  });
+});
+const getUserCertificates = catchAsync(async (req: Request, res: Response) => {
+  const { coachId } = req.params;
+  const result = await experienceService.getUserCertificates(coachId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Certificates retrieved successfully',
+    data: result,
+  });
+});
+const getUserWorkHistory = catchAsync(async (req: Request, res: Response) => {
+  const { coachId } = req.params;
+  const result = await experienceService.getUserWorkHistory(coachId);
 
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Work history retrieved successfully',
+    data: result,
+  });
+});
 export const sessionController = {
   createSession,
   updateSession,
@@ -157,4 +212,9 @@ export const sessionController = {
   getAvailableTimeSlots,
   getRecommendedCoach,
   getCoach,
+  getGallery,
+  getAllReview,
+  getAnalysis,
+  getUserCertificates,
+  getUserWorkHistory
 };
