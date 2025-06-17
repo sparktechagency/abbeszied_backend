@@ -99,8 +99,8 @@ const applyJob = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { userId } = req.user;
   const result = await JobPostService.applyJob(
-    id,
     userId,
+    id,
     req.body.application,
   );
 
