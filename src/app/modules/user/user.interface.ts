@@ -16,6 +16,7 @@ export interface TClientCreate {
   password: string;
   phone: string;
   address: string;
+  overview: string;
   bio?: string;
   introVideo?: string;
   verifiedBadge: boolean;

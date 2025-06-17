@@ -4,13 +4,21 @@ import { IJobPost } from './jobPost.interface';
 import { ApplyJob, JobPost } from './jobPost.model';
 import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
-
+import { FavouriteJob } from '../favourit jobs/favouritJobs.model';
+const checkIsFavourite = async (jobId: string, userId: string) => {
+  const favouriteRecord = await FavouriteJob.findOne({ userId, jobId });
+  const isFavourite = !!favouriteRecord;
+  return isFavourite;
+};
 const createJobPostToDB = async (payload: IJobPost): Promise<IJobPost> => {
   const result = await JobPost.create(payload);
   return result;
 };
 
-const getAllJobPostsFromDB = async (query: Record<string, unknown>) => {
+const getAllJobPostsFromDB = async (
+  query: Record<string, unknown>,
+  userId: string,
+) => {
   const queryBuilder = new QueryBuilder(
     JobPost.find().populate('postedBy'),
     query,
@@ -22,9 +30,20 @@ const getAllJobPostsFromDB = async (query: Record<string, unknown>) => {
 
   const result = await queryBuilder.modelQuery.exec();
   const meta = await queryBuilder.countTotal();
+  // 8. Process sessions with additional data (favorite and rating)
+  const recommended = await Promise.all(
+    result.map(async (jobs: any) => {
+      const isFavorite = await checkIsFavourite(jobs._id, userId);
+      return {
+        ...jobs.toObject(),
+        isFavorite,
+      };
+    }),
+  );
+
   return {
     meta,
-    result,
+    result: recommended,
   };
 };
 const getMyJobPosts = async (
@@ -95,7 +114,30 @@ const applyJob = async (
     jobPostId,
     application,
   });
+  await JobPost.findByIdAndUpdate(jobPostId, {
+    $inc: { applicationSubmitted: 1 },
+  });
   return result;
+};
+const getApplication = async (id: string, query: Record<string, unknown>) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError(httpStatus.NOT_ACCEPTABLE, 'Invalid job post ID');
+  }
+  const queryBuilder = new QueryBuilder(
+    ApplyJob.find({ jobPostId: id }).populate('userId', 'fullName email phone'),
+    query,
+  );
+  const result = await queryBuilder
+    .fields()
+    .filter()
+    .paginate()
+    .sort()
+    .modelQuery.exec();
+  const meta = await queryBuilder.countTotal();
+  return {
+    meta,
+    result,
+  };
 };
 export const JobPostService = {
   createJobPostToDB,
@@ -105,4 +147,5 @@ export const JobPostService = {
   deleteJobPostFromDB,
   getMyJobPosts,
   applyJob,
+  getApplication,
 };

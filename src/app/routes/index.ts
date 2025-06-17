@@ -21,6 +21,7 @@ import bookingRoutes from '../modules/booking/booking.route';
 import { FavouritdRouter } from '../modules/favourit/favourit.router';
 import { BannerRoutes } from '../modules/banner/banner.routes';
 import { JobPostRoutes } from '../modules/jobPost/jobPost.routes';
+import { FavouritdJobRouter } from '../modules/favourit jobs/favouritJobs.router';
 
 const router = Router();
 
@@ -44,6 +45,10 @@ const moduleRoutes = [
   {
     path: '/favourite',
     route: FavouritdRouter,
+  },
+  {
+    path: '/favourite-jobs',
+    route: FavouritdJobRouter,
   },
   {
     path: '/setting',

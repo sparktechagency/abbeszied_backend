@@ -3,10 +3,19 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { MessageService } from './message.service';
 import { ChatService } from '../chat/chat.service';
+import { FilesObject } from '../../interface/common.interface';
+import { Request } from 'express';
+import { updateFileName } from '../../utils/fileHelper';
 
 const sendMessage = catchAsync(async (req, res) => {
+  const { files } = req as Request & { files: FilesObject };
   const chatId: any = req.params.chatId;
   const { userId }: any = req.user;
+
+  const images = files.images?.map((photo) =>
+    updateFileName('images', photo.filename),
+  );
+  req.body.images = images;
   req.body.sender = userId;
   req.body.chatId = chatId;
 

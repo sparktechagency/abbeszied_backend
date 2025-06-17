@@ -21,7 +21,8 @@ const createJobPost = catchAsync(async (req, res) => {
 });
 
 const getAllJobPosts = catchAsync(async (req: Request, res: Response) => {
-  const result = await JobPostService.getAllJobPostsFromDB(req.query);
+  const { userId } = req.user;
+  const result = await JobPostService.getAllJobPostsFromDB(req.query, userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -79,8 +80,19 @@ const deleteJobPost = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getApplication = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await JobPostService.getApplication(id, req.query);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Job applications retrieved successfully',
+    data: result.result,
+    meta: result.meta,
+  });
+});
 const applyJob = catchAsync(async (req, res) => {
-  console.log('req.file', req.file);
   if (req?.file) {
     req.body.application = updateFileName('applications', req?.file?.filename);
   }
@@ -108,4 +120,5 @@ export const JobPostController = {
   deleteJobPost,
   getMyJobPosts,
   applyJob,
+  getApplication,
 };

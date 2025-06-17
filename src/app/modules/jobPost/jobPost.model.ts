@@ -45,7 +45,7 @@ const jobPostSchema = new Schema<IJobPost, JobPostModel>(
       currency: {
         type: String,
         required: true,
-        default: 'USD',
+        default: 'QAR',
       },
     },
     benefits: [
@@ -65,6 +65,10 @@ const jobPostSchema = new Schema<IJobPost, JobPostModel>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    applicationSubmitted: {
+      type: Number,
+      default: 0,
     },
     postedBy: {
       type: Schema.Types.ObjectId,

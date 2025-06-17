@@ -29,6 +29,11 @@ router.post(
   auth(USER_ROLE.COACH),
   JobPostController.applyJob,
 );
+router.get(
+  '/get-applications/:id',
+  auth(USER_ROLE.CORPORATE),
+  JobPostController.getApplication,
+);
 router
   .route('/:id')
   .get(JobPostController.getJobPostById)

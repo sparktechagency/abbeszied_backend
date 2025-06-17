@@ -67,6 +67,10 @@ const userSchema = new Schema<TUser>(
       type: String,
       default: '',
     },
+    overview: {
+      type: String,
+      default: '',
+    },
     isActive: {
       type: Boolean,
       default: true,

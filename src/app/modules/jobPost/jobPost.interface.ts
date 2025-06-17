@@ -18,6 +18,7 @@ export type IJobPost = {
   howToApply: string;
   deadline: Date;
   isActive: boolean;
+  applicationSubmitted: number;
   postedBy: Schema.Types.ObjectId; // Reference to User model
 };
 export interface IApplyJob extends IJobPost {
