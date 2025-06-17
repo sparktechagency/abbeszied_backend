@@ -521,6 +521,7 @@ const getAvailableTimeSlots = async (coachId: string, selectedDay: Date) => {
       },
     },
   });
+  console.log('session', session);
 
   if (!session) {
     return [];

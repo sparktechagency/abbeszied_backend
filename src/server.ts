@@ -50,7 +50,7 @@ async function main() {
     //@ts-ignore
     global.io = io;
     logger.info(
-      colors.yellow(`♻️  Socket is listening on ${ip}:${config.socket_port}`),
+      colors.yellow(`♻️ Socket is listening on http://${ip}:${port}`),
     );
   } catch (error) {
     errorLogger.error(colors.red('🤢 Failed to connect Database'), error);

@@ -19,6 +19,8 @@ import { chatRoutes } from '../modules/chat/chat.route';
 import { messageRoutes } from '../modules/message/message.route';
 import bookingRoutes from '../modules/booking/booking.route';
 import { FavouritdRouter } from '../modules/favourit/favourit.router';
+import { BannerRoutes } from '../modules/banner/banner.routes';
+import { JobPostRoutes } from '../modules/jobPost/jobPost.routes';
 
 const router = Router();
 
@@ -106,6 +108,14 @@ const moduleRoutes = [
   {
     path: '/booking',
     route: bookingRoutes,
+  },
+  {
+    path: '/banner',
+    route: BannerRoutes,
+  },
+  {
+    path: '/job',
+    route: JobPostRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

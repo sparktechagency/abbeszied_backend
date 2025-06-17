@@ -7,7 +7,6 @@ import { Types } from 'mongoose';
 
 // Enhanced version with better error handling and logging
 const sendMessageToDB = async (payload: IMessage): Promise<IMessage> => {
-
   // Check if chat exists
   const chat = await Chat.findById(payload.chatId);
   if (!chat) {
@@ -57,7 +56,6 @@ const sendMessageToDB = async (payload: IMessage): Promise<IMessage> => {
 
   const response = await Message.create(messagePayload);
 
-
   // Update chat - remove ALL participants from readBy except sender
   // This ensures unread count is calculated correctly
   const updatedChat = await Chat.findByIdAndUpdate(
@@ -70,10 +68,15 @@ const sendMessageToDB = async (payload: IMessage): Promise<IMessage> => {
     { new: true },
   );
 
-
   // Get populated message for socket
   const populatedMessage = await Message.findById(response._id)
     .populate('sender', 'fullName email profile')
+    .lean();
+
+  // Get updated chat with populated data for chat list update
+  const populatedChat = await Chat.findById(response?.chatId)
+    .populate('participants', 'fullName email profile')
+    .populate('lastMessage')
     .lean();
 
   // Socket emissions
@@ -98,6 +101,25 @@ const sendMessageToDB = async (payload: IMessage): Promise<IMessage> => {
         chatId: payload.chatId,
         action: 'increment', // Frontend should increment its local count
       });
+
+      // Emit chat list update to move this chat to top
+      io.emit(`chatListUpdate::${participantIdStr}`, {
+        chatId: payload.chatId,
+        chat: populatedChat,
+        action: 'moveToTop',
+        lastMessage: populatedMessage,
+        updatedAt: new Date(),
+      });
+    });
+
+    // Also emit chat list update to sender (to update their own chat list)
+    const senderIdStr = payload.sender.toString();
+    io.emit(`chatListUpdate::${senderIdStr}`, {
+      chatId: payload.chatId,
+      chat: populatedChat,
+      action: 'moveToTop',
+      lastMessage: populatedMessage,
+      updatedAt: new Date(),
     });
   }
 

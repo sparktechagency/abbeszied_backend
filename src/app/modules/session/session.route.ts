@@ -68,6 +68,11 @@ sessionRoutes
     auth(USER_ROLE.CLIENT),
     sessionController.getUserCertificates,
   )
+  .get(
+    '/coach-session/:coachId',
+    auth(USER_ROLE.CLIENT),
+    sessionController.getCoachSession,
+  )
   // Get available time slots for a specific coach and date
   .get(
     '/available-slots',

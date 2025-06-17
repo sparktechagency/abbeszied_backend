@@ -91,6 +91,17 @@ const getUserSessions = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getCoachSession = catchAsync(async (req: Request, res: Response) => {
+  const { coachId } = req.params;
+  const result = await sessionService.getUserSessions(coachId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Sessions retrieved successfully',
+    data: result,
+  });
+});
 const getRecommendedCoach = catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.user;
   const result = await sessionService.getRecommendedCoach(userId, req.query);
@@ -125,30 +136,28 @@ const getAllSessions = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAvailableTimeSlots = catchAsync(
-  async (req: Request, res: Response) => {
-    const { coachId, selectedDay } = req.query;
+const getAvailableTimeSlots = catchAsync(async (req, res) => {
+  const { coachId, selectedDay } = req.query;
 
-    if (!coachId || !selectedDay) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        'Coach ID and selected day are required',
-      );
-    }
-
-    const result = await sessionService.getAvailableTimeSlots(
-      coachId as string,
-      new Date(selectedDay as string),
+  if (!coachId || !selectedDay) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Coach ID and selected day are required',
     );
+  }
 
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Available time slots retrieved successfully',
-      data: result,
-    });
-  },
-);
+  const result = await sessionService.getAvailableTimeSlots(
+    coachId as string,
+    new Date(selectedDay as string),
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Available time slots retrieved successfully',
+    data: result,
+  });
+});
 const getGallery = catchAsync(async (req, res) => {
   const { coachId } = req.params;
   const result = await GalleryService.getGallery(coachId);
@@ -216,5 +225,6 @@ export const sessionController = {
   getAllReview,
   getAnalysis,
   getUserCertificates,
-  getUserWorkHistory
+  getUserWorkHistory,
+  getCoachSession,
 };

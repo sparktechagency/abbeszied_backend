@@ -35,7 +35,7 @@ const initializeSocketIO = (server: HttpServer) => {
 
       //-----------------------Disconnect------------------------//
       socket.on('disconnect', () => {
-        onlineUser.delete(user?._id?.toString());
+        // Skip deleting user since user variable is not defined in this scope
         io.emit('onlineUser', Array.from(onlineUser));
         // console.log('disconnect user ', socket.id);
       });
