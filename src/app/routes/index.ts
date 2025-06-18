@@ -5,7 +5,6 @@ import { authRoutes } from '../modules/auth/auth.route';
 import settingsRouter from '../modules/settings/setting.route';
 import notificationRoutes from '../modules/notification/notification.route';
 import { ruleRoutes } from '../modules/rule/rule.routes';
-import { paymentRoutes } from '../modules/payment/payment.route';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
 import experienceRoutes from '../modules/experience/experience.route';
@@ -22,6 +21,7 @@ import { FavouritdRouter } from '../modules/favourit/favourit.router';
 import { BannerRoutes } from '../modules/banner/banner.routes';
 import { JobPostRoutes } from '../modules/jobPost/jobPost.routes';
 import { FavouritdJobRouter } from '../modules/favourit jobs/favouritJobs.router';
+import { CategoryRoutes } from '../modules/category/category.route';
 
 const router = Router();
 
@@ -58,10 +58,7 @@ const moduleRoutes = [
     path: '/notification',
     route: notificationRoutes,
   },
-  {
-    path: '/payment',
-    route: paymentRoutes,
-  },
+
   {
     path: '/stripe',
     route: stripeAccountRoutes,
@@ -121,6 +118,10 @@ const moduleRoutes = [
   {
     path: '/job',
     route: JobPostRoutes,
+  },
+  {
+    path: '/category',
+    route: CategoryRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

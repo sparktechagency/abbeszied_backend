@@ -14,7 +14,12 @@ bookingRoutes
     validateRequest(bookingValidation.createBookingSchema),
     bookingController.createPaymentIntent,
   )
-
+  // Get all bookings
+  .get(
+    '/',
+    auth(USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN),
+    bookingController.getAllBooking,
+  )
   // Get user bookings
   .get(
     '/my-bookings',

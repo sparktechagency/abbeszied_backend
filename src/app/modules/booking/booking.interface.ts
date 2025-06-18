@@ -36,6 +36,7 @@ export interface IBooking {
   coachId: Types.ObjectId;
   userId: Types.ObjectId;
   selectedDay: Date;
+  orderNumber: string;
   startTime: string;
   endTime: string;
   price: number;

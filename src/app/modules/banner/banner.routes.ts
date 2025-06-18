@@ -27,7 +27,16 @@ router.get(
   auth(USER_ROLE.CORPORATE),
   BannerController.getCorporateBanner,
 );
-router.get('/coach', auth(USER_ROLE.COACH), BannerController.getCoachBanner);
+router.get(
+  '/client-store',
+  auth(USER_ROLE.CORPORATE),
+  BannerController.getClientStoreBanner,
+);
+router.get(
+  '/coach-store',
+  auth(USER_ROLE.CORPORATE),
+  BannerController.getCoachStoreBanner,
+);
 
 router
   .route('/:id')

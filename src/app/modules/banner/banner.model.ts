@@ -14,7 +14,7 @@ const bannerSchema = new Schema<IBanner, BannerModel>(
     },
     type: {
       type: String,
-      enum: [USER_ROLE.CLIENT, USER_ROLE.CORPORATE, USER_ROLE.COACH],
+      enum: ['client', 'corporate', 'coach', 'clientStore', 'coachStore'],
       required: true,
     },
   },

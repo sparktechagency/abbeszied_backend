@@ -24,6 +24,10 @@ const bookingSchema = new Schema<IBooking>(
       ref: 'User',
       required: true,
     },
+    orderNumber: {
+      type: String,
+      default: '',
+    },
     selectedDay: {
       type: Date,
       required: true,

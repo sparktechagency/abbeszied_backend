@@ -60,6 +60,26 @@ const getCoachBanner = catchAsync(async (req, res) => {
     data: coachResult,
   });
 });
+const getClientStoreBanner = catchAsync(async (req, res) => {
+  const clientStoreResult = await BannerService.getClientStoreAllBannerFromDB();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Banner retrieved successfully',
+    data: clientStoreResult,
+  });
+});
+const getCoachStoreBanner = catchAsync(async (req, res) => {
+  const coachStoreResult = await BannerService.getCoachStoreAllBannerFromDB();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Banner retrieved successfully',
+    data: coachStoreResult,
+  });
+});
 
 const updateBanner = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -96,6 +116,9 @@ export const BannerController = {
   getClientBanner,
   getCorporateBanner,
   getCoachBanner,
+  getClientStoreBanner,
+  getCoachStoreBanner,
   updateBanner,
   deleteBanner,
+  
 };

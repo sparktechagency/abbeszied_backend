@@ -608,9 +608,42 @@ const cleanupExpiredBookings = async () => {
     console.log(`Cleaned up expired booking: ${booking._id}`);
   }
 };
+const getAllBooking = async (query: Record<string, unknown>) => {
+  const queryBuilder = new QueryBuilder(
+    Booking.find({})
+      .populate({
+        path: 'userId',
+        select: 'fullName email image',
+      })
+      .populate({
+        path: 'sessionId',
+        select: 'pricePerSession aboutMe',
+      })
+      .populate({
+        path: 'coachId',
+        select: 'fullName email image',
+      }),
+    query,
+  );
 
+  const result = await queryBuilder
+    .fields()
+    .filter()
+    .paginate()
+    .priceRange()
+    .sort()
+    .search(['orderNumber'])
+    .modelQuery.exec();
+
+  const meta = await queryBuilder.countTotal();
+  return {
+    meta,
+    result,
+  };
+};
 export const bookingService = {
   createPaymentIntent,
+  getAllBooking,
   getUserBookings,
   getCoachBookings,
   getBookingById,

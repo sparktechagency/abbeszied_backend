@@ -114,8 +114,19 @@ const rescheduleBooking = catchAsync(async (req, res) => {
   });
 });
 
+const getAllBooking = catchAsync(async (req, res) => {
+  const result = await bookingService.getAllBooking(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All bookings fetched successfully',
+    data: result.result,
+    meta: result.meta,
+  });
+});
 export const bookingController = {
   createPaymentIntent,
+  getAllBooking,
   getUserBookings,
   getCoachBookings,
   getBookingById,
@@ -123,26 +134,3 @@ export const bookingController = {
   completeBooking,
   rescheduleBooking,
 };
-
-// const bookTimeSlot = catchAsync(async (req: Request, res: Response) => {
-//   const { userId } = req.user;
-//   const { coachId, selectedDay, startTime } = req.body;
-
-//   const result = await bookingService.bookTimeSlot({
-//     coachId,
-//     selectedDay: new Date(selectedDay),
-//     startTime,
-//     clientId: userId,
-//   });
-
-//   sendResponse(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'Time slot booked successfully',
-//     data: result,
-//   });
-// });
-
-// export const bookingController = {
-//   bookTimeSlot,
-// };

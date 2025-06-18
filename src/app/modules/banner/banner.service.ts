@@ -28,13 +28,19 @@ const getAllBannerFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getClientAllBannerFromDB = async (): Promise<IBanner[]> => {
-  return await Banner.find({ type: USER_ROLE.CLIENT });
+  return await Banner.find({ type: 'client' });
 };
 const getCorporateAllBannerFromDB = async (): Promise<IBanner[]> => {
-  return await Banner.find({ type: USER_ROLE.CORPORATE });
+  return await Banner.find({ type: 'corporate' });
 };
 const getCoachAllBannerFromDB = async (): Promise<IBanner[]> => {
-  return await Banner.find({ type: USER_ROLE.COACH });
+  return await Banner.find({ type: 'coach' });
+};
+const getClientStoreAllBannerFromDB = async (): Promise<IBanner[]> => {
+  return await Banner.find({ type: 'clientStore' });
+};
+const getCoachStoreAllBannerFromDB = async (): Promise<IBanner[]> => {
+  return await Banner.find({ type: 'coachStore' });
 };
 
 const updateBannerToDB = async (
@@ -69,4 +75,6 @@ export const BannerService = {
   getClientAllBannerFromDB,
   getCorporateAllBannerFromDB,
   getCoachAllBannerFromDB,
+  getClientStoreAllBannerFromDB,
+  getCoachStoreAllBannerFromDB,
 };

@@ -5,6 +5,7 @@ import {
   PaymentStatus,
 } from '../../../modules/booking/booking.interface';
 import { Session } from '../../../modules/session/session.models';
+import generateOrderNumber from '../../../utils/genereteNumber';
 
 // ✅ Updated to use Checkout.Session instead of PaymentIntent
 const handlePaymentSuccess = async (
@@ -23,6 +24,7 @@ const handlePaymentSuccess = async (
     {
       bookingStatus: BookingStatus.CONFIRMED,
       paymentStatus: PaymentStatus.PAID,
+      orderNumber: generateOrderNumber('ORD#'),
     },
     { new: true },
   );
