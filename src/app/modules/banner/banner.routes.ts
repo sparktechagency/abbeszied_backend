@@ -29,12 +29,12 @@ router.get(
 );
 router.get(
   '/client-store',
-  auth(USER_ROLE.CORPORATE),
+  auth(USER_ROLE.CLIENT),
   BannerController.getClientStoreBanner,
 );
 router.get(
   '/coach-store',
-  auth(USER_ROLE.CORPORATE),
+  auth(USER_ROLE.COACH),
   BannerController.getCoachStoreBanner,
 );
 
