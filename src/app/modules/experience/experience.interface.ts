@@ -13,6 +13,7 @@ export interface ICertificate {
   title: string;
   certificateFile: string;
   userId: Types.ObjectId;
+  verified: boolean;
 }
 
 export type TWorkHistoryResponse = {

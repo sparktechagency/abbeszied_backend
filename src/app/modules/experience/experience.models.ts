@@ -52,6 +52,10 @@ const certificateSchema = new Schema<ICertificate>(
       ref: 'User',
       required: true,
     },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

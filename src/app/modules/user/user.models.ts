@@ -79,6 +79,11 @@ const userSchema = new Schema<TUser>(
       type: Boolean,
       default: false,
     },
+    verifiedByAdmin: {
+      type: String,
+      enum: ['pending', 'verified', 'rejected'],
+      default: 'pending',
+    },
     verifiedBadge: {
       type: Boolean,
       default: false,
@@ -111,7 +116,18 @@ userSchema.pre('save', async function (next) {
   );
   next();
 });
-
+// Mongoose middleware to set `verifiedByAdmin` based on the role when a document is created
+userSchema.pre('save', function (next) {
+  if (this.isNew) {
+    // If it's a new document
+    if (this.role === USER_ROLE.COACH) {
+      this.verifiedByAdmin = 'pending';
+    } else {
+      this.verifiedByAdmin = 'verified';
+    }
+  }
+  next();
+});
 // set '' after saving password
 userSchema.post(
   'save',

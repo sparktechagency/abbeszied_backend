@@ -12,6 +12,7 @@ import { generateOptAndExpireTime } from '../otp/otp.utils';
 import { otpServices } from '../otp/otp.service';
 import { OTPVerifyAndCreateUserProps, userService } from '../user/user.service';
 import { otpSendEmail } from '../../utils/eamilNotifiacation';
+import { USER_ROLE } from '../user/user.constants';
 
 // Login
 const login = async (payload: TLogin) => {
@@ -27,6 +28,17 @@ const login = async (payload: TLogin) => {
 
   if (user?.status === 'blocked') {
     throw new AppError(httpStatus.BAD_REQUEST, 'User is blocked');
+  }
+  if (user.role === USER_ROLE.COACH) {
+    if (
+      user?.verifiedByAdmin === 'pending' ||
+      user?.verifiedByAdmin === 'rejected'
+    ) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Your account is ${user?.verifiedByAdmin} state. Please contact admin for more information.`,
+      );
+    }
   }
 
   const jwtPayload: IJwtPayload = {

@@ -5,6 +5,7 @@ import AppError from '../error/AppError';
 import config from '../config/index';
 import { User } from '../modules/user/user.models';
 import { verifyToken } from '../utils/tokenManage';
+import { USER_ROLE } from '../modules/user/user.constants';
 
 const auth = (...userRoles: string[]) => {
   return catchAsync(async (req, res, next) => {
@@ -36,6 +37,17 @@ const auth = (...userRoles: string[]) => {
     }
     if (isUserExist?.status === 'blocked') {
       throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked !!');
+    }
+    if (isUserExist.role === USER_ROLE.COACH) {
+      if (
+        isUserExist?.verifiedByAdmin === 'pending' ||
+        isUserExist?.verifiedByAdmin === 'rejected'
+      ) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          `Your account is ${isUserExist?.verifiedByAdmin} state. Please contact admin for more information.`,
+        );
+      }
     }
     if (isUserExist?.isDeleted) {
       throw new AppError(

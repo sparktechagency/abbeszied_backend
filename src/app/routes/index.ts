@@ -24,6 +24,7 @@ import { FavouritdJobRouter } from '../modules/favourit jobs/favouritJobs.router
 import { CategoryRoutes } from '../modules/category/category.route';
 import { UserManagmentsRouter } from '../modules/userManagment/userManagment.router';
 import { ProductManagmentsRouter } from '../modules/productsManagments/product.route';
+import { CertificateManagmentsRoutes } from '../modules/certificateManagments/certificate.routes';
 
 const router = Router();
 
@@ -60,7 +61,6 @@ const moduleRoutes = [
     path: '/notification',
     route: notificationRoutes,
   },
-
   {
     path: '/stripe',
     route: stripeAccountRoutes,
@@ -133,6 +133,10 @@ const moduleRoutes = [
     path: '/products-managments',
     route: ProductManagmentsRouter,
   },
+  {
+    path: '/certificate-managments',
+    route: CertificateManagmentsRoutes,
+  }
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
 

@@ -20,6 +20,7 @@ export interface TClientCreate {
   status: string;
   bio?: string;
   introVideo?: string;
+  verifiedByAdmin: 'pending' | 'verified' | 'rejected';
   verifiedBadge: boolean;
   role: (typeof USER_ROLE)[keyof typeof USER_ROLE];
 }
