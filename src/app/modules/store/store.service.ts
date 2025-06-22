@@ -19,7 +19,10 @@ const addProduct = async (payload: IProduct, sellerId: string) => {
   return result;
 };
 const getProduct = async (query: Record<string, unknown>) => {
-  const queryBuilder = new QueryBuilder(Product.find({}), query);
+  const queryBuilder = new QueryBuilder(
+    Product.find({ isApproved: 'approved', isDeleted: false }),
+    query,
+  );
   // Fetch all products based on query filters, sorting, pagination, etc.
   const products = await queryBuilder
     .search(['location', 'name', 'category'])

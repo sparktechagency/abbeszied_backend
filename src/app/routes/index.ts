@@ -23,6 +23,7 @@ import { JobPostRoutes } from '../modules/jobPost/jobPost.routes';
 import { FavouritdJobRouter } from '../modules/favourit jobs/favouritJobs.router';
 import { CategoryRoutes } from '../modules/category/category.route';
 import { UserManagmentsRouter } from '../modules/userManagment/userManagment.router';
+import { ProductManagmentsRouter } from '../modules/productsManagments/product.route';
 
 const router = Router();
 
@@ -127,6 +128,10 @@ const moduleRoutes = [
   {
     path: '/user-managments',
     route: UserManagmentsRouter,
+  },
+  {
+    path: '/products-managments',
+    route: ProductManagmentsRouter,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

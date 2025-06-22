@@ -27,6 +27,11 @@ const productsSchema = new Schema<IProduct>(
       enum: ['available', 'sold'],
       default: 'available',
     },
+    isApproved: {
+      type: String,
+      enum: ['approved', 'pending', 'rejected'],
+      default: 'pending',
+    },
   },
 
   {
@@ -45,7 +50,7 @@ productsSchema.pre('findOne', function (next) {
   next();
 });
 
-productsSchema.pre('aggregate', function (this: Aggregate<any>,next) {
+productsSchema.pre('aggregate', function (this: Aggregate<any>, next) {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
 });
