@@ -83,6 +83,11 @@ const userSchema = new Schema<TUser>(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ['active', 'blocked'],
+      default: 'active',
+    },
   },
   {
     timestamps: true,

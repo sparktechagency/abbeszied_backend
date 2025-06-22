@@ -8,7 +8,15 @@ import { verifyToken } from '../utils/tokenManage';
 
 const auth = (...userRoles: string[]) => {
   return catchAsync(async (req, res, next) => {
-    const token = req?.headers?.authorization?.split(' ')[1];
+    const tokenWithBearer = req.headers.authorization;
+
+    if (!tokenWithBearer) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !!');
+    }
+    if (!tokenWithBearer.startsWith('Bearer')) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Token send is not valid !!');
+    }
+    const token = tokenWithBearer?.split(' ')[1];
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized!');
     }
@@ -26,7 +34,15 @@ const auth = (...userRoles: string[]) => {
     if (!isUserExist) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'user not found');
     }
-
+    if (isUserExist?.status === 'blocked') {
+      throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked !!');
+    }
+    if (isUserExist?.isDeleted) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        'This user accaunt is deleted !!',
+      );
+    }
     if (userRoles && !userRoles.includes(role)) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,

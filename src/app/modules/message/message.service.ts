@@ -58,7 +58,7 @@ const sendMessageToDB = async (payload: IMessage): Promise<IMessage> => {
 
   // Update chat - remove ALL participants from readBy except sender
   // This ensures unread count is calculated correctly
-  const updatedChat = await Chat.findByIdAndUpdate(
+  await Chat.findByIdAndUpdate(
     response?.chatId,
     {
       lastMessage: response._id,

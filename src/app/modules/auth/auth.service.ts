@@ -25,6 +25,10 @@ const login = async (payload: TLogin) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password does not match');
   }
 
+  if (user?.status === 'blocked') {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User is blocked');
+  }
+
   const jwtPayload: IJwtPayload = {
     fullName: user?.fullName,
     email: user.email,
@@ -70,7 +74,7 @@ const forgotPassword = async (email: string) => {
     const otpUpdateData = {
       otp,
       expiredAt,
-      status: 'pending'
+      status: 'pending',
     };
 
     await otpServices.updateOtpByEmail(email, otpUpdateData);
@@ -79,7 +83,7 @@ const forgotPassword = async (email: string) => {
       sentTo: email,
       receiverType: 'email',
       otp,
-      expiredAt, 
+      expiredAt,
     });
   }
 
@@ -241,8 +245,6 @@ const changePassword = async ({
 
   return result;
 };
-
-
 
 // Refresh token
 const refreshToken = async (token: string) => {
