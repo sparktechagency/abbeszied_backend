@@ -4,6 +4,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
 import { FavouriteJob } from './favouritJobs.model';
+import path from 'path';
 
 const toggleFavouriteJob = async (userId: string, jobId: string) => {
   const session = await mongoose.startSession();
@@ -71,9 +72,13 @@ const getFavouriteJobs = async (
   query: Record<string, unknown>,
 ) => {
   const queryBuilder = new QueryBuilder(
-    FavouriteJob.find({ userId })
-      .populate('jobId')
-      .populate('userId', 'fullName image language category'),
+    FavouriteJob.find({ userId }).populate({
+      path: 'jobId',
+      populate: {
+        path: 'postedBy',
+        select: 'fullName image language category',
+      },
+    }),
     query,
   );
 

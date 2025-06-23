@@ -366,7 +366,7 @@ const getUserBookings = async (
 
   const queryBuilder = new QueryBuilder(
     Booking.find(filter)
-      .populate('coachId', 'name email image')
+      .populate('coachId', 'fullName email image')
       .populate('sessionId', 'language pricePerSession')
       .select('coachId selectedDay startTime endTime sessionStatus sessionId'),
     query,
@@ -403,7 +403,7 @@ const getCoachBookings = async (
 
   const queryBuilder = new QueryBuilder(
     Booking.find(filter)
-      .populate('userId', 'name email profileImage')
+      .populate('userId', 'fullName email image')
       .populate('sessionId', 'language pricePerSession'),
     query,
   );
@@ -641,6 +641,97 @@ const getAllBooking = async (query: Record<string, unknown>) => {
     result,
   };
 };
+const getSingleBooking = async (bookingId: string) => {
+  const result = await Booking.findById(bookingId)
+    .populate({
+      path: 'userId',
+      select: 'fullName email image',
+    })
+    .populate({
+      path: 'sessionId',
+      select: 'pricePerSession aboutMe',
+    })
+    .populate({
+      path: 'coachId',
+      select: 'fullName email image',
+    });
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
+  }
+
+  return result;
+};
+
+const getDateRange = (filter: string) => {
+  const today = new Date();
+  let startDate: Date;
+
+  switch (filter) {
+    case 'today':
+      startDate = new Date(today.setHours(0, 0, 0, 0)); // Set to midnight today
+      break;
+    case 'thisWeek':
+      const firstDayOfWeek = today.getDate() - today.getDay(); // Get the first day of the week (Sunday)
+      startDate = new Date(today.setDate(firstDayOfWeek));
+      startDate.setHours(0, 0, 0, 0);
+      break;
+    case 'thisMonth':
+      startDate = new Date(today.getFullYear(), today.getMonth(), 1); // First day of this month
+      break;
+    case 'last30Days':
+      startDate = new Date(today.setDate(today.getDate() - 30)); // 30 days ago
+      break;
+    default:
+      startDate = today; // Default to today
+      break;
+  }
+  return startDate;
+};
+
+const getBookingAnalysis = async (dateFilter: string) => {
+  // Calculate the start date based on the filter
+  const startDate = getDateRange(dateFilter);
+
+  // Extend the query to filter by date
+  const dateQuery = { createdAt: { $gte: startDate } };
+
+  const result = await Booking.aggregate([
+    {
+      $match: {
+        ...dateQuery, // Apply the date range filter
+      },
+    },
+    {
+      $group: {
+        _id: '$bookingStatus',
+        totalBookings: { $sum: 1 },
+        totalAmount: { $sum: '$price' },
+      },
+    },
+  ]);
+  // Define default statuses
+  const defaultStatuses = ['approved', 'pending', 'completed', 'canceled'];
+
+  // Initialize the result with default values for all statuses
+  let resultMap = defaultStatuses.map((status) => ({
+    _id: status,
+    totalBookings: 0,
+    totalAmount: 0,
+  }));
+
+  // Update the resultMap with actual data from the aggregation
+  result.forEach((item) => {
+    const statusIndex = resultMap.findIndex(
+      (status) => status._id === item._id,
+    );
+    if (statusIndex !== -1) {
+      resultMap[statusIndex] = item; // Replace with the actual result
+    }
+  });
+
+  return resultMap;
+};
 export const bookingService = {
   createPaymentIntent,
   getAllBooking,
@@ -651,6 +742,8 @@ export const bookingService = {
   completeBooking,
   cleanupExpiredBookings,
   rescheduleBooking,
+  getSingleBooking,
+  getBookingAnalysis,
 };
 // export const bookingService = {
 //   bookTimeSlot,

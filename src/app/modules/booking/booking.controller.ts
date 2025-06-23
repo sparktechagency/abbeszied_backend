@@ -34,7 +34,7 @@ const getUserBookings = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User bookings fetched successfully',
+    message: 'User bookings retrieved successfully',
     data: result.bookings,
     meta: result.meta,
   });
@@ -47,7 +47,7 @@ const getCoachBookings = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Coach bookings fetched successfully',
+    message: 'Coach bookings retrieved successfully',
     data: result,
   });
 });
@@ -61,7 +61,7 @@ const getBookingById = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Booking fetched successfully',
+    message: 'Booking retrieved successfully',
     data: result,
   });
 });
@@ -119,9 +119,31 @@ const getAllBooking = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'All bookings fetched successfully',
+    message: 'All bookings retrieved successfully',
     data: result.result,
     meta: result.meta,
+  });
+});
+const getSingleBooking = catchAsync(async (req, res) => {
+  const { bookingId } = req.params;
+  const result = await bookingService.getSingleBooking(bookingId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Bookings retrieved successfully',
+    data: result,
+  });
+});
+const getBookingAnalysis = catchAsync(async (req, res) => {
+  // Pass the date filter from the query parameter (e.g., today, thisWeek, etc.)
+  const dateFilter = req.query.dateFilter || 'today'; // Default to today if no filter is provided
+  const result = await bookingService.getBookingAnalysis(dateFilter as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Booking analysis retrieved successfully',
+    data: result,
   });
 });
 export const bookingController = {
@@ -133,4 +155,6 @@ export const bookingController = {
   cancelBooking,
   completeBooking,
   rescheduleBooking,
+  getSingleBooking,
+  getBookingAnalysis
 };

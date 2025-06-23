@@ -38,12 +38,10 @@ router.get(
 );
 router.get(
   '/client',
-  auth(USER_ROLE.CLIENT),
   CategoryController.getClientCategory,
 );
 router.get(
   '/coach',
-  auth(USER_ROLE.COACH),
   CategoryController.getCoachCategory,
 );
 

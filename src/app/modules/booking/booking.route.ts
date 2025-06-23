@@ -20,6 +20,16 @@ bookingRoutes
     auth(USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN),
     bookingController.getAllBooking,
   )
+  .get(
+    '/single/:bookingId',
+    auth(USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN),
+    bookingController.getSingleBooking,
+  )
+  .get(
+    '/analysis',
+    auth(USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN),
+    bookingController.getBookingAnalysis,
+  )
   // Get user bookings
   .get(
     '/my-bookings',
