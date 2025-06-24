@@ -1,104 +1,87 @@
-// import Stripe from "stripe";
-import catchAsync from '../../utils/catchAsync';
-import { Request, Response } from 'express';
-import sendResponse from '../../utils/sendResponse';
-import { notificationService } from './notification.service';
+
 import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
+import { NotificationService } from './notification.service';
+import sendResponse from '../../utils/sendResponse';
 
-const createNotification = catchAsync(async (req: Request, res: Response) => {
-  const result = await notificationService.createNotification(req.body);
+const getNotificationFromDB = catchAsync(async (req, res) => {
+     const user: any = req.user;
+     const result = await NotificationService.getNotificationFromDB(user, req.query);
 
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    data: result,
-    message: 'Notification successful',
-  });
+     sendResponse(res, {
+          statusCode: httpStatus.OK,
+          success: true,
+          message: 'Notifications Retrieved Successfully',
+          data: {
+               result: result.result,
+               unreadCount: result?.unreadCount,
+          },
+          meta: result?.meta,
+     });
 });
 
-const getSingleNotification = catchAsync(
-  async (req: Request, res: Response) => {
-    const { userId } = req.user;
-    const result = await notificationService.getSingleNotification(
-      userId,
-      req.query,
-    );
+const adminNotificationFromDB = catchAsync(async (req, res) => {
+     const { userId }: any = req.user;
+     const result = await NotificationService.adminNotificationFromDB(userId, req.query);
 
-    sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      data: result,
-      message: 'Single notification get successful',
-    });
-  },
-);
+     sendResponse(res, {
+          statusCode: httpStatus.OK,
+          success: true,
+          message: 'Notifications Retrieved Successfully',
+          data: result?.result,
+          meta: result?.meta,
+     });
+});
 
-// const getAllNotificationByUser = catchAsync(async (req, res) => {
-//   const { userId } = req.user;
-//   const result = await notificationService.getAllNotificationQuery(
-//     req.query,
-//     userId as string,
-//   );
+const readNotification = catchAsync(async (req, res) => {
+     const user: any = req.user;
+     const result = await NotificationService.readNotificationToDB(user);
 
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     meta: result.meta,
-//     data: result.result,
-//     message: 'Notification All are requered successful!!',
-//   });
-// });
+     sendResponse(res, {
+          statusCode: httpStatus.OK,
+          success: true,
+          message: 'Notification Read Successfully',
+          data: result,
+     });
+});
+const readNotificationSingle = catchAsync(async (req, res) => {
+     const { id } = req.params;
+     const result = await NotificationService.readNotificationSingleToDB(id);
 
-// const getAllNotificationByAdmin = catchAsync(async (req, res) => {
-//   const result = await notificationService.getAllNotificationByAdminQuery(
-//     req.query,
-//   );
+     sendResponse(res, {
+          statusCode: httpStatus.OK,
+          success: true,
+          message: 'Notification Read Successfully',
+          data: result,
+     });
+});
 
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     meta: result.meta,
-//     data: result.result,
-//     message: 'Notification All are requered successful!!',
-//   });
-// });
+const adminReadNotification = catchAsync(async (req, res) => {
+     const result = await NotificationService.adminReadNotificationToDB();
 
-// const deletedNotification = catchAsync(async (req: Request, res: Response) => {
-//   const { userId } = req.user;
-//   const result = await notificationService.deleteNotification(
-//     req.params.id,
-//     userId,
-//   );
-
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     data: result,
-//     message: 'deleted successful',
-//   });
-// });
-
-// const deletedAdminNotification = catchAsync(
-//   async (req: Request, res: Response) => {
-//     const result = await notificationService.deleteAdminNotification(
-//       req.params.id,
-//     );
-
-//     sendResponse(res, {
-//       success: true,
-//       statusCode: httpStatus.OK,
-//       data: result,
-//       message: 'Notification deleted successful',
-//     });
-//   },
-// );
+     sendResponse(res, {
+          statusCode: httpStatus.OK,
+          success: true,
+          message: 'Notification Read Successfully',
+          data: result,
+     });
+});
+// send admin notifications to the users accaunts
+const sendAdminNotification = catchAsync(async (req, res) => {
+     const result = await NotificationService.adminSendNotificationFromDB(req.body);
+     sendResponse(res, {
+          statusCode: httpStatus.OK,
+          success: true,
+          message: 'Notification Send Successfully',
+          data: result,
+     });
+});
 
 export const NotificationController = {
-  createNotification,
-  getSingleNotification,
-  // getAllNotificationByUser,
-  // getAllNotificationByAdmin,
-  // getSingleNotification,
-  // deletedNotification,
-  // deletedAdminNotification,
+     adminNotificationFromDB,
+     getNotificationFromDB,
+     readNotification,
+     adminReadNotification,
+     sendAdminNotification,
+     readNotificationSingle,
 };

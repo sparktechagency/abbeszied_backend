@@ -3,7 +3,6 @@ import { otpRoutes } from '../modules/otp/otp.routes';
 import { userRoutes } from '../modules/user/user.route';
 import { authRoutes } from '../modules/auth/auth.route';
 import settingsRouter from '../modules/settings/setting.route';
-import notificationRoutes from '../modules/notification/notification.route';
 import { ruleRoutes } from '../modules/rule/rule.routes';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
@@ -25,6 +24,7 @@ import { CategoryRoutes } from '../modules/category/category.route';
 import { UserManagmentsRouter } from '../modules/userManagment/userManagment.router';
 import { ProductManagmentsRouter } from '../modules/productsManagments/product.route';
 import { CertificateManagmentsRoutes } from '../modules/certificateManagments/certificate.routes';
+import { NotificationRoutes } from '../modules/notification/notification.routes';
 
 const router = Router();
 
@@ -58,8 +58,8 @@ const moduleRoutes = [
     route: settingsRouter,
   },
   {
-    path: '/notification',
-    route: notificationRoutes,
+    path: '/notifications',
+    route: NotificationRoutes,
   },
   {
     path: '/stripe',
@@ -136,7 +136,7 @@ const moduleRoutes = [
   {
     path: '/certificate-managments',
     route: CertificateManagmentsRoutes,
-  }
+  },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
 

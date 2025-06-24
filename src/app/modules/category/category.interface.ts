@@ -2,7 +2,8 @@ import { Model } from 'mongoose';
 
 export type ICategory = {
   name: string;
-  type: 'client' | 'coach';
+  type: 'corporate' | 'coach' | 'store';
+  count: number;
   image: string;
 };
 

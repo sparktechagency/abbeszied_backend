@@ -7,11 +7,16 @@ const serviceSchema = new Schema<ICategory, CategoryModel>(
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
     type: {
       type: String,
-      enum: ['client', 'coach'],
+      enum: ['corporate', 'coach', 'store'],
       required: true,
+    },
+    count: {
+      type: Number,
+      default: 0,
     },
     image: {
       type: String,

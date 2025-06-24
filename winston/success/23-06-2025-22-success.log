@@ -28,3 +28,6 @@ Mon Jun 23 2025 22:28:28 [MY_SERVER] info: [46m🚀 Database connected successf
 Mon Jun 23 2025 22:28:28 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
 Mon Jun 23 2025 22:28:28 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
 Mon Jun 23 2025 22:28:28 [MY_SERVER] info: [34mA user connected[39m
+Mon Jun 23 2025 22:37:1 [MY_SERVER] info: [31mA user disconnect[39m
+Mon Jun 23 2025 22:37:2 [MY_SERVER] info: [34mA user connected[39m
+Mon Jun 23 2025 22:47:53 [MY_SERVER] info: [31mA user disconnect[39m

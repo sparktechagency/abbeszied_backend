@@ -1,7 +1,7 @@
-import { TNotification } from "../modules/notification/notification.interface";
-import Notification from "../modules/notification/notification.model";
+import { INotification } from "../modules/notification/notification.interface";
+import { Notification } from "../modules/notification/notification.model";
 
-export const sendNotifications = async (data: any): Promise<TNotification> => {
+export const sendNotifications = async (data: any): Promise<INotification> => {
      const result = await Notification.create(data);
      //@ts-ignore
      const socketIo = global.io;

@@ -10,6 +10,7 @@ import { userCreateEmail } from '../../utils/eamilNotifiacation';
 import { createToken, verifyToken } from '../../utils/tokenManage';
 import { IJwtPayload } from '../auth/auth.interface';
 import { Certificate } from '../experience/experience.models';
+import { Category } from '../category/category.model';
 
 export type IFilter = {
   searchTerm?: string;
@@ -24,7 +25,6 @@ export interface OTPVerifyAndCreateUserProps {
 
 const createUserToken = async (payload: TCoachCreate) => {
   const { email, role, fullName, cerificates } = payload;
-  console.log('payload', payload);
   if (
     !(
       role === USER_ROLE.CLIENT ||
@@ -43,6 +43,27 @@ const createUserToken = async (payload: TCoachCreate) => {
   if (userExist) {
     throw new AppError(httpStatus.BAD_REQUEST, 'User already exist!!');
   }
+  console.log('category payload', payload.category);
+  const findCategory = await Category.findOne({
+    name: payload.category,
+    type: 'coach',
+  });
+
+  if (!findCategory) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Category not found!');
+  }
+
+  // Log the category for debugging purposes
+  console.log('Found Category:', findCategory);
+
+  // Increment the count field
+  findCategory.count += 1;
+
+  // Save the updated category
+  await findCategory.save();
+
+  // Optionally log the success message
+  console.log('Updated Category:', findCategory);
 
   // send email
   process.nextTick(async () => {

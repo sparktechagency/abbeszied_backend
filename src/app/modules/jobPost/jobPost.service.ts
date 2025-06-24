@@ -124,7 +124,9 @@ const getApplication = async (id: string, query: Record<string, unknown>) => {
     throw new AppError(httpStatus.NOT_ACCEPTABLE, 'Invalid job post ID');
   }
   const queryBuilder = new QueryBuilder(
-    ApplyJob.find({ jobPostId: id }).populate('userId', 'fullName email phone'),
+    ApplyJob.find({ jobPostId: id })
+      .populate('userId', 'fullName email phone image verifiedBadge')
+      .populate('jobPostId', 'jobCategory'),
     query,
   );
   const result = await queryBuilder

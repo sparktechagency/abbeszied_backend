@@ -6,19 +6,34 @@
     "auditLog": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\.b6d94dc532d15046c3bc6140ac30911b8a96df7c-audit.json",
     "files": [
         {
-            "date": 1750609673618,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\22-06-2025-22-error.log",
-            "hash": "dc3318ffcd96501a04aa1122b6f26586b12d91f8b532e29071a3e2133dbe45d5"
-        },
-        {
-            "date": 1750679369276,
-            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\23-06-2025-17-error.log",
-            "hash": "bc1c50aad5381457fbdfe7863a1f974cdc3fbf13c6d21e9a98f7568096aa0734"
-        },
-        {
             "date": 1750694848940,
             "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\23-06-2025-22-error.log",
             "hash": "4cb5b7b3c55e1e9aca271429b798c0de39b2a4a2938693d5a1966e62b54a4637"
+        },
+        {
+            "date": 1750735179468,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\24-06-2025-09-error.log",
+            "hash": "9e3e6787f80a60c5269797175f41830ba1f4bf2c2a4495de2ba967d2be6b1f72"
+        },
+        {
+            "date": 1750771079281,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\24-06-2025-19-error.log",
+            "hash": "2e83df2bea6b93f70730dc8eff5558bb524e1803b769100f2537674aef3329da"
+        },
+        {
+            "date": 1750775743976,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\24-06-2025-20-error.log",
+            "hash": "d3693eacb4e37e4376b731691c8ce50f4e22001e3c0b9735d1bc44c9b0bfb6ed"
+        },
+        {
+            "date": 1750779662833,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\24-06-2025-21-error.log",
+            "hash": "44eda582421a57193f436f68453d01f36a95826569b4ea32d2d84d4958599af8"
+        },
+        {
+            "date": 1750780883266,
+            "name": "C:\\Users\\Rakib\\OneDrive\\Desktop\\projects\\backend-abbezaied\\winston\\error\\24-06-2025-22-error.log",
+            "hash": "4fc2b7ad387e2bd37ec44ad2e7812d84061e3c55a7d644e7f4353ab74c800d1f"
         }
     ],
     "hashType": "sha256"

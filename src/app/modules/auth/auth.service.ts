@@ -13,6 +13,7 @@ import { otpServices } from '../otp/otp.service';
 import { OTPVerifyAndCreateUserProps, userService } from '../user/user.service';
 import { otpSendEmail } from '../../utils/eamilNotifiacation';
 import { USER_ROLE } from '../user/user.constants';
+import { sendNotifications } from '../../helpers/sendNotification';
 
 // Login
 const login = async (payload: TLogin) => {
@@ -40,7 +41,12 @@ const login = async (payload: TLogin) => {
       );
     }
   }
-
+  await sendNotifications({
+    receiver: user?._id,
+    type: 'SYSTEM',
+    title: 'Login Successful',
+    message: 'You have successfully logged in.',
+  });
   const jwtPayload: IJwtPayload = {
     fullName: user?.fullName,
     email: user.email,
