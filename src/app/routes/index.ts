@@ -25,6 +25,8 @@ import { UserManagmentsRouter } from '../modules/userManagment/userManagment.rou
 import { ProductManagmentsRouter } from '../modules/productsManagments/product.route';
 import { CertificateManagmentsRoutes } from '../modules/certificateManagments/certificate.routes';
 import { NotificationRoutes } from '../modules/notification/notification.routes';
+import { AdminRoutes } from '../modules/admin/admin.route';
+import { DashboardRoutes } from '../modules/dashboard/dashboard.route';
 
 const router = Router();
 
@@ -136,6 +138,14 @@ const moduleRoutes = [
   {
     path: '/certificate-managments',
     route: CertificateManagmentsRoutes,
+  },
+  {
+    path: '/admin-managments',
+    route: AdminRoutes,
+  },
+  {
+    path: '/dashboard',
+    route: DashboardRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

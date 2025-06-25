@@ -70,6 +70,10 @@ const getCoachCategory = async () => {
   const result = await Category.find({ type: 'coach' });
   return result;
 };
+const getStoreCategory = async () => {
+  const result = await Category.find({ type: 'store' });
+  return result;
+};
 export const CategoryService = {
   createCategoryToDB,
   getCategoriesFromDB,
@@ -77,4 +81,5 @@ export const CategoryService = {
   deleteCategoryToDB,
   getClientCategory,
   getCoachCategory,
+  getStoreCategory
 };

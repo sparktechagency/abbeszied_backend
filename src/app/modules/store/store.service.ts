@@ -3,6 +3,7 @@ import Product from './store.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
+import { sendNotifications } from '../../helpers/sendNotification';
 
 const addProduct = async (payload: IProduct, sellerId: string) => {
   // Add seller id to product
@@ -76,17 +77,39 @@ const getSingleProduct = async (id: string) => {
 
 const markAsSold = async (id: string, sellerId: string) => {
   const product = await Product.findById(id);
+
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
   }
+
   if (product.status === 'sold') {
     throw new AppError(httpStatus.BAD_REQUEST, 'Product is already sold');
   }
+
   if (product.sellerId.toString() !== sellerId) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'You are not authorized');
+    throw new AppError(httpStatus.FORBIDDEN, 'You are not authorized');
   }
+
+  // Ensure product has a buyer before marking as sold
+  if (!product.buyerId) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Product has no buyer');
+  }
+
   product.status = 'sold';
   const result = await product.save();
+
+  // Send notification but don't fail the operation if it fails
+  try {
+    await sendNotifications({
+      receiver: product.buyerId,
+      type: 'ORDER',
+      message: `Your order for ${product.name} has been marked as sold`,
+    });
+  } catch (error) {
+    console.error('Failed to send notification:', error);
+    // Could queue for retry or log to monitoring service
+  }
+
   return result;
 };
 

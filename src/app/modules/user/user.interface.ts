@@ -19,6 +19,9 @@ export interface TClientCreate {
   overview: string;
   status: string;
   bio?: string;
+  totalEarning: number;
+  totalSpend: number;
+  jobPostCount: number;
   introVideo?: string;
   verifiedByAdmin: 'pending' | 'verified' | 'rejected';
   verifiedBadge: boolean;

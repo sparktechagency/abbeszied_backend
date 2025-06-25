@@ -22,6 +22,7 @@ router
   );
 
 router.get('/client', auth(USER_ROLE.CLIENT), BannerController.getClientBanner);
+router.get('/coach', auth(USER_ROLE.COACH), BannerController.getCoachBanner);
 router.get(
   '/corporate',
   auth(USER_ROLE.CORPORATE),

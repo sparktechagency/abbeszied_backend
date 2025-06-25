@@ -13,6 +13,7 @@ import {
 import { Booking } from './booking.models';
 import stripe from '../../config/stripe.config';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { sendNotifications } from '../../helpers/sendNotification';
 
 // Helper function to convert 24-hour format to 12-hour format
 const convertTo12Hour = (time24h: string): string => {
@@ -222,7 +223,7 @@ const rescheduleBooking = async (
     currentBookingDateTime.getTime() - now.getTime();
   const hoursUntilCurrentBooking = timeDifferenceFromCurrent / (1000 * 60 * 60);
 
-  if (hoursUntilCurrentBooking < 24) {
+  if (hoursUntilCurrentBooking < 24 && hoursUntilCurrentBooking > 0) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Cannot reschedule booking within 24 hours of scheduled time',
@@ -235,7 +236,6 @@ const rescheduleBooking = async (
   newBookingDateTime.setHours(parseInt(newHours), parseInt(newMinutes));
 
   const timeDifferenceToNew = newBookingDateTime.getTime() - now.getTime();
-  console.log(timeDifferenceToNew);
   const hoursUntilNewBooking = timeDifferenceToNew / (1000 * 60 * 60);
 
   if (hoursUntilNewBooking < 24) {
@@ -342,7 +342,12 @@ const rescheduleBooking = async (
       },
       { new: true, session },
     );
-
+    const client = await User.findById(existingBooking.userId);
+    await sendNotifications({
+      receiver: existingBooking.coachId,
+      type: 'RESCHEDULED',
+      message: `Your client ${client?.fullName} has rescheduled the session`,
+    });
     await session.commitTransaction();
 
     return {
@@ -368,7 +373,9 @@ const getUserBookings = async (
     Booking.find(filter)
       .populate('coachId', 'fullName email image')
       .populate('sessionId', 'language pricePerSession')
-      .select('coachId selectedDay startTime endTime sessionStatus sessionId'),
+      .select(
+        'coachId selectedDay startTime endTime sessionStatus sessionId paymentStatus bookingStatus',
+      ),
     query,
   );
 
@@ -546,6 +553,7 @@ const cancelBooking = async (
 
       await Booking.findByIdAndUpdate(bookingId, {
         paymentStatus: PaymentStatus.REFUNDED,
+        bookingStatus: BookingStatus.CANCELLED,
       });
     } catch (error) {
       console.error('Refund failed:', error);
@@ -589,7 +597,12 @@ const completeBooking = async (bookingId: string, coachId: string) => {
     { sessionStatus: SessionStatus.COMPLETED },
     { new: true },
   );
-
+  const client = await User.findById(booking?.userId);
+  await sendNotifications({
+    receiver: booking?.userId,
+    type: 'COMPLETED',
+    message: `Client ${client?.fullName} has completed the session`,
+  });
   return updatedBooking;
 };
 
@@ -711,7 +724,12 @@ const getBookingAnalysis = async (dateFilter: string) => {
     },
   ]);
   // Define default statuses
-  const defaultStatuses = ['approved', 'pending', 'completed', 'canceled'];
+  const defaultStatuses = [
+    BookingStatus.PENDING,
+    BookingStatus.CONFIRMED,
+    BookingStatus.COMPLETED,
+    BookingStatus.CANCELLED,
+  ];
 
   // Initialize the result with default values for all statuses
   let resultMap = defaultStatuses.map((status) => ({

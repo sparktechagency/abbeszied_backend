@@ -1,0 +1,46 @@
+Wed Jun 25 2025 16:1:1 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jun 25 2025 16:1:3 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:8:0 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
+Wed Jun 25 2025 16:8:0 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:8:0 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:8:0 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:8:0 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:8:5 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
+Wed Jun 25 2025 16:8:5 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:8:5 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:8:5 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:8:6 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:8:46 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
+Wed Jun 25 2025 16:8:46 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:8:46 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:8:46 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:8:47 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:8:49 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
+Wed Jun 25 2025 16:8:49 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:8:49 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:8:49 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:8:50 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:15:49 [MY_SERVER] warn: [42m[1mUnhandled event type: charge.succeeded[22m[49m
+Wed Jun 25 2025 16:15:49 [MY_SERVER] warn: [42m[1mUnhandled event type: payment_intent.succeeded[22m[49m
+Wed Jun 25 2025 16:15:49 [MY_SERVER] warn: [42m[1mUnhandled event type: payment_intent.created[22m[49m
+Wed Jun 25 2025 16:15:51 [MY_SERVER] warn: [42m[1mUnhandled event type: charge.updated[22m[49m
+Wed Jun 25 2025 16:24:23 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jun 25 2025 16:24:25 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:29:56 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
+Wed Jun 25 2025 16:29:56 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:29:56 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:29:57 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
+Wed Jun 25 2025 16:29:57 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:29:57 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Wed Jun 25 2025 16:29:58 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:29:59 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:30:39 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jun 25 2025 16:30:40 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:38:7 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jun 25 2025 16:39:19 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:47:25 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jun 25 2025 16:47:26 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:56:21 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jun 25 2025 16:56:22 [MY_SERVER] info: [34mA user connected[39m
+Wed Jun 25 2025 16:58:18 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jun 25 2025 16:58:19 [MY_SERVER] info: [34mA user connected[39m

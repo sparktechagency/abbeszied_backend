@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+
 import { JobPostService } from './jobPost.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
@@ -20,7 +20,7 @@ const createJobPost = catchAsync(async (req, res) => {
   });
 });
 
-const getAllJobPosts = catchAsync(async (req: Request, res: Response) => {
+const getAllJobPosts = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const result = await JobPostService.getAllJobPostsFromDB(req.query, userId);
 
@@ -32,7 +32,7 @@ const getAllJobPosts = catchAsync(async (req: Request, res: Response) => {
     data: result.result,
   });
 });
-const getMyJobPosts = catchAsync(async (req: Request, res: Response) => {
+const getMyJobPosts = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const result = await JobPostService.getMyJobPosts(userId, req.query);
 
@@ -45,7 +45,7 @@ const getMyJobPosts = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getJobPostById = catchAsync(async (req: Request, res: Response) => {
+const getJobPostById = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await JobPostService.getJobPostByIdFromDB(id);
 
@@ -57,7 +57,7 @@ const getJobPostById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateJobPost = catchAsync(async (req: Request, res: Response) => {
+const updateJobPost = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await JobPostService.updateJobPostToDB(id, req.body);
 
@@ -69,7 +69,7 @@ const updateJobPost = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const deleteJobPost = catchAsync(async (req: Request, res: Response) => {
+const deleteJobPost = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await JobPostService.deleteJobPostFromDB(id);
 
@@ -80,7 +80,7 @@ const deleteJobPost = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-const getApplication = catchAsync(async (req: Request, res: Response) => {
+const getApplication = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await JobPostService.getApplication(id, req.query);
 

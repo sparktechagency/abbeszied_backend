@@ -44,5 +44,9 @@ router.get(
   '/coach',
   CategoryController.getCoachCategory,
 );
+router.get(
+  '/store',
+  CategoryController.getStoreCategory,
+);
 
 export const CategoryRoutes = router;

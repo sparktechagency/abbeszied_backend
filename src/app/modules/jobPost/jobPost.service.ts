@@ -5,13 +5,30 @@ import { ApplyJob, JobPost } from './jobPost.model';
 import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { FavouriteJob } from '../favourit jobs/favouritJobs.model';
+import { sendNotifications } from '../../helpers/sendNotification';
+import { User } from '../user/user.models';
 const checkIsFavourite = async (jobId: string, userId: string) => {
   const favouriteRecord = await FavouriteJob.findOne({ userId, jobId });
   const isFavourite = !!favouriteRecord;
   return isFavourite;
 };
 const createJobPostToDB = async (payload: IJobPost): Promise<IJobPost> => {
+  // Verify user exists
+  const user = await User.findById(payload.postedBy);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
   const result = await JobPost.create(payload);
+
+  try {
+    await User.findByIdAndUpdate(payload.postedBy, {
+      $inc: { jobPostCount: 1 },
+    });
+  } catch (error) {
+    console.error('Failed to update job post count:', error);
+  }
+
   return result;
 };
 
@@ -116,6 +133,13 @@ const applyJob = async (
   });
   await JobPost.findByIdAndUpdate(jobPostId, {
     $inc: { applicationSubmitted: 1 },
+  });
+  const client = await User.findById(userId);
+  const jobPost = await JobPost.findById(jobPostId);
+  await sendNotifications({
+    receiver: jobPost?.postedBy,
+    type: 'APPLICATION',
+    message: `You have a new application from ${client?.fullName}`,
   });
   return result;
 };

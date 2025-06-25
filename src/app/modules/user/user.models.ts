@@ -46,7 +46,18 @@ const userSchema = new Schema<TUser>(
       required: true,
       select: false,
     },
-
+    totalEarning: {
+      type: Number,
+      default: 0,
+    },
+    totalSpend: {
+      type: Number,
+      default: 0,
+    },
+    jobPostCount: {
+      type: Number,
+      default: 0,
+    },
     category: {
       type: String,
       default: undefined,

@@ -34,6 +34,9 @@ const getCategories = catchAsync(async (req: Request, res: Response) => {
 const updateCategory = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const updateCategoryData = req.body;
+  if (req?.file) {
+    req.body.image = updateFileName('category', req?.file?.filename);
+  }
   const result = await CategoryService.updateCategoryToDB(
     id,
     updateCategoryData,
@@ -78,6 +81,16 @@ const getCoachCategory = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getStoreCategory = catchAsync(async (req: Request, res: Response) => {
+  const result = await CategoryService.getStoreCategory();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Category retrieved successfully',
+    data: result,
+  });
+});
 export const CategoryController = {
   createCategory,
   getCategories,
@@ -85,4 +98,5 @@ export const CategoryController = {
   deleteCategory,
   getClientCategory,
   getCoachCategory,
+  getStoreCategory
 };
