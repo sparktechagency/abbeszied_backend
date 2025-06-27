@@ -3,15 +3,30 @@ import { otpRoutes } from '../modules/otp/otp.routes';
 import { userRoutes } from '../modules/user/user.route';
 import { authRoutes } from '../modules/auth/auth.route';
 import settingsRouter from '../modules/settings/setting.route';
-import notificationRoutes from '../modules/notification/notification.route';
 import { ruleRoutes } from '../modules/rule/rule.routes';
-import { parkingRoutes } from '../modules/parking/parking.route';
-import favouriteRoutes from '../modules/favourite/favourite.route';
-import reviewRouters from '../modules/ratings/ratings.route';
-import { paymentRoutes } from '../modules/payment/payment.route';
-import { parkingBookingRoutes } from '../modules/booking/booking.route';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
+import experienceRoutes from '../modules/experience/experience.route';
+import sessionRoutes from '../modules/session/session.route';
+import galleryRoutes from '../modules/gallery/gallery.route';
+import { supportRoutes } from '../modules/support/support.route';
+import { reviewRoutes } from '../modules/review/review.router';
+import { storeRouter } from '../modules/store/store.route';
+import { reportRoutes } from '../modules/report/report.route';
+import { chatRoutes } from '../modules/chat/chat.route';
+import { messageRoutes } from '../modules/message/message.route';
+import bookingRoutes from '../modules/booking/booking.route';
+import { FavouritdRouter } from '../modules/favourit/favourit.router';
+import { BannerRoutes } from '../modules/banner/banner.routes';
+import { JobPostRoutes } from '../modules/jobPost/jobPost.routes';
+import { FavouritdJobRouter } from '../modules/favourit jobs/favouritJobs.router';
+import { CategoryRoutes } from '../modules/category/category.route';
+import { UserManagmentsRouter } from '../modules/userManagment/userManagment.router';
+import { ProductManagmentsRouter } from '../modules/productsManagments/product.route';
+import { CertificateManagmentsRoutes } from '../modules/certificateManagments/certificate.routes';
+import { NotificationRoutes } from '../modules/notification/notification.routes';
+import { AdminRoutes } from '../modules/admin/admin.route';
+import { DashboardRoutes } from '../modules/dashboard/dashboard.route';
 
 const router = Router();
 
@@ -33,32 +48,20 @@ const moduleRoutes = [
     route: ruleRoutes,
   },
   {
-    path: '/parking',
-    route: parkingRoutes,
+    path: '/favourite',
+    route: FavouritdRouter,
   },
   {
-    path: '/favourite',
-    route: favouriteRoutes,
+    path: '/favourite-jobs',
+    route: FavouritdJobRouter,
   },
   {
     path: '/setting',
     route: settingsRouter,
   },
   {
-    path: '/notification',
-    route: notificationRoutes,
-  },
-  {
-    path: '/review',
-    route: reviewRouters,
-  },
-  {
-    path: '/payment',
-    route: paymentRoutes,
-  },
-  {
-    path: '/booking',
-    route: parkingBookingRoutes,
+    path: '/notifications',
+    route: NotificationRoutes,
   },
   {
     path: '/stripe',
@@ -67,6 +70,82 @@ const moduleRoutes = [
   {
     path: '/contact',
     route: contactUsRoutes,
+  },
+  {
+    path: '/experience',
+    route: experienceRoutes,
+  },
+  {
+    path: '/sessions',
+    route: sessionRoutes,
+  },
+  {
+    path: '/gallery',
+    route: galleryRoutes,
+  },
+  {
+    path: '/support',
+    route: supportRoutes,
+  },
+  {
+    path: '/admin/support',
+    route: supportRoutes,
+  },
+  {
+    path: '/review',
+    route: reviewRoutes,
+  },
+  {
+    path: '/store',
+    route: storeRouter,
+  },
+  {
+    path: '/report',
+    route: reportRoutes,
+  },
+  {
+    path: '/chat',
+    route: chatRoutes,
+  },
+  {
+    path: '/messages',
+    route: messageRoutes,
+  },
+  {
+    path: '/booking',
+    route: bookingRoutes,
+  },
+  {
+    path: '/banner',
+    route: BannerRoutes,
+  },
+  {
+    path: '/job',
+    route: JobPostRoutes,
+  },
+  {
+    path: '/category',
+    route: CategoryRoutes,
+  },
+  {
+    path: '/user-managments',
+    route: UserManagmentsRouter,
+  },
+  {
+    path: '/products-managments',
+    route: ProductManagmentsRouter,
+  },
+  {
+    path: '/certificate-managments',
+    route: CertificateManagmentsRoutes,
+  },
+  {
+    path: '/admin-managments',
+    route: AdminRoutes,
+  },
+  {
+    path: '/dashboard',
+    route: DashboardRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

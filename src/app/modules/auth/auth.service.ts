@@ -12,6 +12,8 @@ import { generateOptAndExpireTime } from '../otp/otp.utils';
 import { otpServices } from '../otp/otp.service';
 import { OTPVerifyAndCreateUserProps, userService } from '../user/user.service';
 import { otpSendEmail } from '../../utils/eamilNotifiacation';
+import { USER_ROLE } from '../user/user.constants';
+import { sendNotifications } from '../../helpers/sendNotification';
 
 // Login
 const login = async (payload: TLogin) => {
@@ -25,6 +27,26 @@ const login = async (payload: TLogin) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password does not match');
   }
 
+  if (user?.status === 'blocked') {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User is blocked');
+  }
+  if (user.role === USER_ROLE.COACH) {
+    if (
+      user?.verifiedByAdmin === 'pending' ||
+      user?.verifiedByAdmin === 'rejected'
+    ) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Your account is ${user?.verifiedByAdmin} state. Please contact admin for more information.`,
+      );
+    }
+  }
+  await sendNotifications({
+    receiver: user?._id,
+    type: 'SYSTEM',
+    title: 'Login Successful',
+    message: 'You have successfully logged in.',
+  });
   const jwtPayload: IJwtPayload = {
     fullName: user?.fullName,
     email: user.email,
@@ -70,6 +92,7 @@ const forgotPassword = async (email: string) => {
     const otpUpdateData = {
       otp,
       expiredAt,
+      status: 'pending',
     };
 
     await otpServices.updateOtpByEmail(email, otpUpdateData);
@@ -112,7 +135,6 @@ const forgotPasswordOtpMatch = async ({
   otp,
   token,
 }: OTPVerifyAndCreateUserProps) => {
-  // console.log({ otp, token });
   if (!token) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Token not found');
   }
@@ -121,14 +143,15 @@ const forgotPasswordOtpMatch = async ({
     token,
     access_secret: config.jwt_access_secret as string,
   });
-
   if (!decodeData) {
     throw new AppError(httpStatus.BAD_REQUEST, 'You are not authorised');
   }
-
+  console.log('decodeData', decodeData);
   const { email } = decodeData;
 
   const isOtpMatch = await otpServices.otpMatch(email, otp);
+
+  console.log('isOtpMatch', isOtpMatch);
 
   if (!isOtpMatch) {
     throw new AppError(httpStatus.BAD_REQUEST, 'OTP did not match');
@@ -242,10 +265,6 @@ const changePassword = async ({
 
   return result;
 };
-
-// rest ..............................
-
-// Forgot password
 
 // Refresh token
 const refreshToken = async (token: string) => {

@@ -68,7 +68,7 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
 const forgotPasswordOtpMatch = catchAsync(
   async (req: Request, res: Response) => {
     const token = req?.headers?.token as string;
-
+    console.log('token', token);
     const { otp } = req.body;
 
     const result = await authServices.forgotPasswordOtpMatch({ otp, token });

@@ -6,6 +6,8 @@ import { errorLogger, logger } from './app/utils/logger';
 import config from './app/config';
 import { socketHelper } from './app/helpers/socketHelper';
 
+// Remove the mongoose.set() calls - they're not needed for this version
+
 // Handle uncaught exceptions globally
 process.on('uncaughtException', (error) => {
   errorLogger.error('UnhandleException Detected', error);
@@ -16,12 +18,12 @@ let server: any;
 
 async function main() {
   try {
-    // Connect to MongoDB with the recommended options to avoid deprecation warnings
-    await mongoose.connect(config.database_url as string, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    // Connect to MongoDB - simple connection for modern Mongoose
+    await mongoose.connect(config.database_url as string).then(() => {
+      logger.info(colors.bgCyan('🚀 Database connected successfully'));
+      // Seed Super Admin after database connection is successful
+      // seedSuperAdmin()
     });
-    logger.info(colors.bgCyan('🚀 Database connected successfully'));
 
     // Validate and normalize port and IP
     const port =
@@ -48,7 +50,7 @@ async function main() {
     //@ts-ignore
     global.io = io;
     logger.info(
-      colors.yellow(`♻️  Socket is listening on ${ip}:${config.socket_port}`),
+      colors.yellow(`♻️ Socket is listening on http://${ip}:${port}`),
     );
   } catch (error) {
     errorLogger.error(colors.red('🤢 Failed to connect Database'), error);

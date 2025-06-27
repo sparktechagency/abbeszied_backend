@@ -15,6 +15,18 @@ export interface TClientCreate {
   email: string;
   password: string;
   phone: string;
+  address: string;
+  overview: string;
+  status: string;
+  bio?: string;
+  totalEarning: number;
+  totalExpariance: number;
+  totalSessionComplete: number;
+  totalSpend: number;
+  jobPostCount: number;
+  introVideo?: string;
+  verifiedByAdmin: 'pending' | 'verified' | 'rejected';
+  verifiedBadge: boolean;
   role: (typeof USER_ROLE)[keyof typeof USER_ROLE];
 }
 
@@ -28,7 +40,6 @@ export interface TCoachCreate extends TClientCreate {
 export interface TUser extends TCoachCreate {
   _id: string;
   image: string;
-  revenue?: number;
   stripeConnectedAcount: string;
   stripeCustomerId: string;
   isActive: boolean;

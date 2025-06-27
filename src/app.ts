@@ -1,54 +1,55 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* app.ts */
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
+import path from 'path';
+import handleStripeWebhook from './app/helpers/stripe/handleStripeWebhook'; // Your webhook handler
+
+// Import your other middleware & routers if needed
 import globalErrorHandler from './app/middleware/globalErrorhandler';
 import notFound from './app/middleware/notfound';
 import router from './app/routes';
-import webhookHandler from './app/modules/stripeAccount/webhookHandler';
 
-import path from 'path';
 const app: Application = express();
 
+// View engine setup (optional)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(
+// Stripe webhook endpoint: use express.raw to get raw body required for Stripe signature verification
+app.post(
   '/api/v1/stripe/webhook',
   express.raw({ type: 'application/json' }),
-  webhookHandler,
+  handleStripeWebhook,
 );
 
+// Serve static files from 'public'
 app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
 
-//parsers
+// Middleware for parsing urlencoded and JSON bodies (non-webhook routes)
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Cookie parser and CORS setup
 app.use(cookieParser());
 app.use(
   cors({
     origin: true,
-    // origin: 'https://memorial-moments-website.vercel.app',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   }),
 );
 
-// Remove duplicate static middleware
-// app.use(app.static('public'));
-
-// application routes
+// Your API routes
 app.use('/api/v1', router);
 
+// Basic route for testing
 app.get('/', (req: Request, res: Response) => {
   res.send('Sports server is running');
 });
-app.use(globalErrorHandler);
 
-//Not Found
+// Error handling middleware
+app.use(globalErrorHandler);
 app.use(notFound);
 
 export default app;

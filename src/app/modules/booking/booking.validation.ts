@@ -1,28 +1,37 @@
 import { z } from 'zod';
 
-// Define the validation schema for creating a field
-const courtBookingZodValidationSchema = z.object({
+const createBookingSchema = z.object({
   body: z.object({
-    courtId: z.string({
-      required_error: 'Court Id is required!',
-    }),
-    bookingPrice: z.number({
-      required_error: 'Booking price is required!',
-    }),
-    bookingDate: z.string({
-      required_error: 'Booking date is required!',
-    }),
-    bookingStartTime: z.string({
-      required_error: 'Booking start time is required!',
-    }),
-
-    // duration: z.number({
-    //   required_error: 'Duration   is required!',
-    // }),
+    coachId: z.string().min(1, 'Coach ID is required'),
+    sessionId: z.string().min(1, 'Session ID is required'),
+    selectedDay: z.string().min(1, 'Selected day is required'),
+    startTime: z.string().min(1, 'Start time is required'),
+    endTime: z.string().min(1, 'End time is required'),
+    price: z.number().positive('Price must be positive'),
   }),
 });
 
-// Export the schema
-export const courtBookingValidation = {
-  courtBookingZodValidationSchema,
+const cancelBookingSchema = z.object({
+  body: z.object({
+    reason: z.string().optional(),
+  }),
+});
+const rescheduleBookingSchema = z.object({
+    body: z.object({
+      newSelectedDay: z.string({
+        required_error: 'New selected day is required',
+      }),
+      newStartTime: z.string({
+        required_error: 'New start time is required',
+      }),
+      newEndTime: z.string({
+        required_error: 'New end time is required',
+      }),
+      reason: z.string().optional(),
+    }),
+  });
+export const bookingValidation = {
+  createBookingSchema,
+  cancelBookingSchema,
+  rescheduleBookingSchema,
 };

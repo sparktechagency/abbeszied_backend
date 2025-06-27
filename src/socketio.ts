@@ -1,13 +1,5 @@
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
-import getUserDetailsFromToken from './app/helpers/getUserDetailsFromToken';
-import AppError from './app/error/AppError';
-import httpStatus from 'http-status';
-
 const initializeSocketIO = (server: HttpServer) => {
   const io = new Server(server, {
     cors: {
@@ -43,7 +35,7 @@ const initializeSocketIO = (server: HttpServer) => {
 
       //-----------------------Disconnect------------------------//
       socket.on('disconnect', () => {
-        onlineUser.delete(user?._id?.toString());
+        // Skip deleting user since user variable is not defined in this scope
         io.emit('onlineUser', Array.from(onlineUser));
         // console.log('disconnect user ', socket.id);
       });

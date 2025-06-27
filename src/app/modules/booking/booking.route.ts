@@ -1,28 +1,76 @@
-import { Router } from 'express';
-import { parkingBookingController } from './booking.controller';
+import express from 'express';
 import auth from '../../middleware/auth';
 import { USER_ROLE } from '../user/user.constants';
+import validateRequest from '../../middleware/validateRequest';
+import { bookingController } from './booking.controller';
+import { bookingValidation } from './booking.validation';
 
-export const parkingBookingRoutes = Router();
+const bookingRoutes = express.Router();
 
-parkingBookingRoutes
+bookingRoutes
   .post(
-    '/',
-    auth(USER_ROLE.USER),
-    parkingBookingController.createParkingBookingWebHook,
+    '/create-payment-intent',
+    auth(USER_ROLE.CLIENT),
+    validateRequest(bookingValidation.createBookingSchema),
+    bookingController.createPaymentIntent,
   )
+  // Get all bookings
   .get(
     '/',
-    auth(USER_ROLE.BUSINESS, USER_ROLE.USER),
-    parkingBookingController.getAllBookingByOwnerId,
+    auth(USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN),
+    bookingController.getAllBooking,
   )
   .get(
-    '/today-entry-exit',
-    auth(USER_ROLE.BUSINESS),
-    parkingBookingController.getTodayEntryOrExit,
+    '/single/:bookingId',
+    auth(USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN),
+    bookingController.getSingleBooking,
   )
+  .get(
+    '/analysis',
+    auth(USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN),
+    bookingController.getBookingAnalysis,
+  )
+  // Get user bookings
+  .get(
+    '/my-bookings',
+    auth(USER_ROLE.CLIENT),
+    bookingController.getUserBookings,
+  )
+
+  // Get coach bookings
+  .get(
+    '/coach-bookings',
+    auth(USER_ROLE.COACH),
+    bookingController.getCoachBookings,
+  )
+
+  // Get single booking
   .get(
     '/:bookingId',
-    auth(USER_ROLE.BUSINESS, USER_ROLE.USER, USER_ROLE.ADMIN),
-    parkingBookingController.getBookingDetails,
+    auth(USER_ROLE.CLIENT, USER_ROLE.COACH),
+    bookingController.getBookingById,
+  )
+
+  // Cancel booking
+  .patch(
+    '/cancel/:bookingId',
+    auth(USER_ROLE.CLIENT),
+    validateRequest(bookingValidation.cancelBookingSchema),
+    bookingController.cancelBooking,
+  )
+
+  // Complete booking (for coaches)
+  .patch(
+    '/complete/:bookingId',
+    auth(USER_ROLE.COACH),
+    bookingController.completeBooking,
+  )
+  // Reschedule booking
+  .patch(
+    '/reschedule/:bookingId',
+    auth(USER_ROLE.CLIENT),
+    validateRequest(bookingValidation.rescheduleBookingSchema),
+    bookingController.rescheduleBooking,
   );
+
+export default bookingRoutes;

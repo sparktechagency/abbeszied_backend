@@ -9,6 +9,12 @@ const parseData = () => {
     if (req.body?.locationLatLong) {
       req.body.locationLatLong = JSON.parse(req.body.locationLatLong);
     }
+    if (req.body?.images) {
+      req.body.images = JSON.parse(req.body.images);
+    }
+    if (req.body?.traningVanue) {
+      req.body.traningVanue = JSON.parse(req.body.traningVanue);
+    }
     if (req.body?.availableDays) {
       req.body.availableDays = JSON.parse(req.body.availableDays);
     }

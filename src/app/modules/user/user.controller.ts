@@ -3,21 +3,19 @@ import catchAsync from '../../utils/catchAsync';
 import { userService } from './user.service';
 import sendResponse from '../../utils/sendResponse';
 import { updateFileName } from '../../utils/fileHelper';
-
 import httpStatus from 'http-status';
 import { FilesObject } from '../../interface/common.interface';
+import { USER_ROLE } from './user.constants';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const { body, files } = req as Request & { files: FilesObject };
-
   const cerificates = files.cerificates?.map((photo) =>
     updateFileName('profile', photo.filename),
   );
-
   body.cerificates = cerificates;
 
   if (!body.role) {
-    body.role = 'client';
+    body.role = USER_ROLE.CLIENT;
   }
   const data = await userService.createUserToken(body);
 
@@ -115,10 +113,19 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
-  // console.log('object-update profile');
-  // console.log(req.body);
-  if (req?.file) {
-    req.body.image = updateFileName('profile', req?.file?.filename);
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+  // Handle image upload
+  if (files?.image?.[0]) {
+    req.body.image = updateFileName('profile', files.image[0].filename);
+  }
+
+  // Handle introVideo upload
+  if (files?.introVideo?.[0]) {
+    req.body.introVideo = updateFileName(
+      'profile',
+      files.introVideo[0].filename,
+    );
   }
 
   const result = await userService.updateUser(req?.user?.userId, req.body);
@@ -130,7 +137,6 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
 const updateOwnerStatus = catchAsync(async (req: Request, res: Response) => {
   const { businessId } = req?.params;
 
