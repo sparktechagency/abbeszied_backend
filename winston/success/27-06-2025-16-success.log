@@ -37,3 +37,7 @@ Fri Jun 27 2025 16:32:49 [MY_SERVER] info: [33m♻️  Application listening on
 Fri Jun 27 2025 16:33:1 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
 Fri Jun 27 2025 16:33:1 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
 Fri Jun 27 2025 16:33:1 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Fri Jun 27 2025 16:55:52 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
+Fri Jun 27 2025 16:55:52 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
+Fri Jun 27 2025 16:55:52 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Fri Jun 27 2025 16:55:54 [MY_SERVER] info: [34mA user connected[39m
