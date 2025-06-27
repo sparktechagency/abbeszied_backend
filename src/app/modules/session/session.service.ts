@@ -196,6 +196,8 @@ const createSession = async (payload: {
       language: payload.language || [],
       coachId: new Types.ObjectId(payload.coachId),
       aboutMe: payload.aboutMe,
+      category: user.category || '',
+      experience: user.totalExpariance || 0,
       // sessionPackage: sessionPackage,
       // totalSessions: totalSessions,
       // bookedSessions: 0,
@@ -430,25 +432,17 @@ const getRecommendedCoach = async (
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
-
   const userInterests = user.interests || [];
 
-  // 2. Build the base query depending on user's interests
   let baseQuery;
-
-  // Case when user has interests
   if (userInterests.length > 0) {
-    // Attempt to find sessions where coach's category matches user's interests
     baseQuery = Session.find({
-      'coachId.category': { $in: userInterests },
+      category: { $in: userInterests },
     }).select('pricePerSession coachId');
   } else {
     // If no interests, get all sessions
     baseQuery = Session.find().select('pricePerSession coachId');
   }
-
-  // 3. Populate the coach information
-  baseQuery = baseQuery.populate('coachId', 'fullName email category image');
 
   // 4. Execute the base query to check for matching sessions
   const matchingSessions = await baseQuery.exec();
@@ -465,12 +459,13 @@ const getRecommendedCoach = async (
   // 6. Build the query with filters, sorting, pagination, etc.
   const queryBuilder = new QueryBuilder(baseQuery, query);
   const result = await queryBuilder
-    .filter() // Custom filter logic
-    .sort() // Sorting logic
-    .paginate() // Pagination logic
-    .fields() // Select fields
-    .search([]) // Search logic, if necessary
-    .priceRange() // Price range filtering
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .search([])
+    .priceRange()
+    .languageFilter()
     .modelQuery.exec();
 
   // 7. Count total number of sessions after filtering, sorting, etc.

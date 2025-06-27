@@ -7,6 +7,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { FavouriteJob } from '../favourit jobs/favouritJobs.model';
 import { sendNotifications } from '../../helpers/sendNotification';
 import { User } from '../user/user.models';
+import { Category } from '../category/category.model';
 const checkIsFavourite = async (jobId: string, userId: string) => {
   const favouriteRecord = await FavouriteJob.findOne({ userId, jobId });
   const isFavourite = !!favouriteRecord;
@@ -25,6 +26,11 @@ const createJobPostToDB = async (payload: IJobPost): Promise<IJobPost> => {
     await User.findByIdAndUpdate(payload.postedBy, {
       $inc: { jobPostCount: 1 },
     });
+
+    await Category.findOneAndUpdate(
+      { name: payload.jobCategory, type: "corporate" },
+      { $inc: { count: 1 } },
+    );
   } catch (error) {
     console.error('Failed to update job post count:', error);
   }
@@ -43,7 +49,8 @@ const getAllJobPostsFromDB = async (
     .filter()
     .sort()
     .paginate()
-    .fields();
+    .fields()
+    .salaryRange();
 
   const result = await queryBuilder.modelQuery.exec();
   const meta = await queryBuilder.countTotal();

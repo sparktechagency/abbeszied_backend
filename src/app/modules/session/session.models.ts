@@ -78,7 +78,14 @@ const sessionSchema = new Schema<ISession>(
       required: true,
       unique: true, // Ensures one session document per coach
     },
-
+    category: {
+      type: String,
+      required: true,
+    },
+    experience: {
+      type: Number,
+      required: true,
+    },
     isActive: {
       type: Boolean,
       default: true,

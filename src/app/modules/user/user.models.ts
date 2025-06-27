@@ -50,6 +50,10 @@ const userSchema = new Schema<TUser>(
       type: Number,
       default: 0,
     },
+    totalExpariance: {
+      type: Number,
+      default: 0,
+    },
     totalSpend: {
       type: Number,
       default: 0,
@@ -58,9 +62,13 @@ const userSchema = new Schema<TUser>(
       type: Number,
       default: 0,
     },
+    totalSessionComplete: {
+      type: Number,
+      default: 0,
+    },
     category: {
       type: String,
-      default: undefined,
+      default: '',
     },
     traningVanue: {
       type: [String],

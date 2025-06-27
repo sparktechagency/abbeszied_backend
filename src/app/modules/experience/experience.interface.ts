@@ -1,4 +1,4 @@
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export interface IWorkHistory {
   companyName: string;
@@ -15,7 +15,11 @@ export interface ICertificate {
   userId: Types.ObjectId;
   verified: boolean;
 }
+export interface IWorkHistoryMethods {}
 
+export interface WorkHistoryModel extends Model<IWorkHistory, {}, IWorkHistoryMethods> {
+  updateUserTotalExperience(userId: string | Types.ObjectId): Promise<number>;
+}
 export type TWorkHistoryResponse = {
   _id: Types.ObjectId;
 } & IWorkHistory;

@@ -146,10 +146,12 @@ const forgotPasswordOtpMatch = async ({
   if (!decodeData) {
     throw new AppError(httpStatus.BAD_REQUEST, 'You are not authorised');
   }
-
+  console.log('decodeData', decodeData);
   const { email } = decodeData;
 
   const isOtpMatch = await otpServices.otpMatch(email, otp);
+
+  console.log('isOtpMatch', isOtpMatch);
 
   if (!isOtpMatch) {
     throw new AppError(httpStatus.BAD_REQUEST, 'OTP did not match');

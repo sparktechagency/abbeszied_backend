@@ -35,6 +35,9 @@ class QueryBuilder<T> {
       'fields',
       'minPrice',
       'maxPrice',
+      'maxSalary',
+      'minSalary',
+      'languages',
     ];
     const queryObj = { ...this.query };
     excludeFields.forEach((el) => delete queryObj[el]);
@@ -85,6 +88,50 @@ class QueryBuilder<T> {
         price: priceFilter,
       } as FilterQuery<T>);
     }
+    return this;
+  }
+  
+  salaryRange() {
+    const minSalary = this.query?.minSalary
+      ? Number(this.query.minSalary)
+      : undefined;
+    const maxSalary = this.query?.maxSalary
+      ? Number(this.query.maxSalary)
+      : undefined;
+  
+    const salaryFilters = [];
+  
+    if (minSalary !== undefined && !isNaN(minSalary)) {
+      salaryFilters.push({ 'salary.max': { $gte: minSalary } });
+    }
+  
+    if (maxSalary !== undefined && !isNaN(maxSalary)) {
+      salaryFilters.push({ 'salary.max': { $lte: maxSalary } });
+    }
+  
+    if (salaryFilters.length > 0) {
+      this.modelQuery = this.modelQuery.find({
+        $and: salaryFilters
+      } as FilterQuery<T>);
+    }
+  
+    return this;
+  }
+  languageFilter() {
+    let languages = this.query?.languages;
+    
+    // Handle comma-separated string from query params
+    if (typeof languages === 'string') {
+      languages = languages.split(',').map((lang: string) => lang.trim());
+    }
+    
+    if (languages && Array.isArray(languages) && languages.length > 0) {
+      // Filter jobs that have any of the specified languages
+      this.modelQuery = this.modelQuery.find({
+        language: { $in: languages }
+      } as FilterQuery<T>);
+    }
+    
     return this;
   }
   async countTotal() {

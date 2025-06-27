@@ -36,17 +36,9 @@ router.get(
   auth(USER_ROLE.SUPER_ADMIN, USER_ROLE.ADMIN),
   CategoryController.getCategories,
 );
-router.get(
-  '/client',
-  CategoryController.getClientCategory,
-);
-router.get(
-  '/coach',
-  CategoryController.getCoachCategory,
-);
-router.get(
-  '/store',
-  CategoryController.getStoreCategory,
-);
+router.get('/client', CategoryController.getClientCategory);
+router.get('/coach', CategoryController.getCoachCategory);
+router.get('/corporate', CategoryController.getCoachCategory);
+router.get('/store', CategoryController.getStoreCategory);
 
 export const CategoryRoutes = router;

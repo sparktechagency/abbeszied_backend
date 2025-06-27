@@ -22,6 +22,8 @@ export interface ISession {
   dailySessions: IDailySession[];
   language: string[];
   coachId: Types.ObjectId;
+  category: string;
+  experience: number;
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;

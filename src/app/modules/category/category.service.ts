@@ -63,11 +63,11 @@ const deleteCategoryToDB = async (id: string): Promise<ICategory | null> => {
   return deleteCategory;
 };
 const getClientCategory = async () => {
-  const result = await Category.find({ type: 'client' });
+  const result = await Category.find({ type: 'coach' });
   return result;
 };
 const getCoachCategory = async () => {
-  const result = await Category.find({ type: 'coach' });
+  const result = await Category.find({ type: 'corporate' });
   return result;
 };
 const getStoreCategory = async () => {
@@ -81,5 +81,5 @@ export const CategoryService = {
   deleteCategoryToDB,
   getClientCategory,
   getCoachCategory,
-  getStoreCategory
+  getStoreCategory,
 };

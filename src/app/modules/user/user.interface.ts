@@ -20,6 +20,8 @@ export interface TClientCreate {
   status: string;
   bio?: string;
   totalEarning: number;
+  totalExpariance: number;
+  totalSessionComplete: number;
   totalSpend: number;
   jobPostCount: number;
   introVideo?: string;

@@ -1,5 +1,6 @@
-import { Schema, model } from 'mongoose';
-import { ICertificate, IWorkHistory } from './experience.interface';
+import { Schema, Types, model } from 'mongoose';
+import { ICertificate, IWorkHistory, WorkHistoryModel } from './experience.interface';
+import { User } from '../user/user.models';
 
 const workHistorySchema = new Schema<IWorkHistory>(
   {
@@ -64,8 +65,86 @@ const certificateSchema = new Schema<ICertificate>(
     },
   },
 );
+// Function to update user's total experience
+// Function to update user's total experience
+workHistorySchema.statics.updateUserTotalExperience = async function(
+  userId: string | Types.ObjectId
+): Promise<number> {
+  const userObjectId = typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
+  
+  const matchStage = { $match: { userId: userObjectId } };
+  
+  const pipeline = [
+    matchStage,
+    {
+      $addFields: {
+        effectiveEndDate: {
+          $cond: { if: '$currentWork', then: new Date(), else: '$endDate' }
+        }
+      }
+    },
+    {
+      $addFields: {
+        experienceMs: { $subtract: ['$effectiveEndDate', '$startDate'] }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalExperienceMs: { $sum: '$experienceMs' }
+      }
+    },
+    {
+      $project: {
+        totalYears: {
+          $round: [
+            { $divide: ['$totalExperienceMs', 1000 * 60 * 60 * 24 * 365.25] },
+            2
+          ]
+        }
+      }
+    }
+  ];
 
-export const WorkHistory = model<IWorkHistory>(
+  const result = await this.aggregate(pipeline);
+  const totalExperience = result[0]?.totalYears || 0;
+  
+  // Update user's totalExpariance
+  await User.findByIdAndUpdate(userObjectId, { totalExpariance: totalExperience });
+  
+  return totalExperience;
+};
+
+// Auto-update user experience after any change
+workHistorySchema.post('save', async function(doc) {
+  try {
+    await WorkHistory.updateUserTotalExperience(doc.userId);
+  } catch (error) {
+    console.error('Error updating user experience:', error);
+  }
+});
+
+workHistorySchema.post('findOneAndUpdate', async function(doc) {
+  if (doc) {
+    try {
+      await WorkHistory.updateUserTotalExperience(doc.userId);
+    } catch (error) {
+      console.error('Error updating user experience:', error);
+    }
+  }
+});
+
+workHistorySchema.post('findOneAndDelete', async function(doc) {
+  if (doc) {
+    try {
+      await WorkHistory.updateUserTotalExperience(doc.userId);
+    } catch (error) {
+      console.error('Error updating user experience:', error);
+    }
+  }
+});
+
+export const WorkHistory = model<IWorkHistory, WorkHistoryModel>(
   'WorkHistory',
   workHistorySchema,
 );

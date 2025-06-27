@@ -603,6 +603,10 @@ const completeBooking = async (bookingId: string, coachId: string) => {
     type: 'COMPLETED',
     message: `Client ${client?.fullName} has completed the session`,
   });
+  // Update user experience
+  await User.findByIdAndUpdate(coachId, {
+    $inc: { totalSessionComplete: 1 },
+  });
   return updatedBooking;
 };
 
