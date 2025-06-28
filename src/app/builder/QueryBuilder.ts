@@ -90,6 +90,28 @@ class QueryBuilder<T> {
     }
     return this;
   }
+  experienceRange() {
+    const experienceFilter: Record<string, unknown> = {};
+    const minExperience = this.query?.minExperience
+      ? Number(this.query.minExperience)
+      : undefined;
+    const maxExperience = this.query?.maxExperience
+      ? Number(this.query.maxExperience)
+      : undefined;
+
+    if (minExperience !== undefined && !isNaN(minExperience)) {
+      experienceFilter.$gte = minExperience;
+    }
+    if (maxExperience !== undefined && !isNaN(maxExperience)) {
+      experienceFilter.$lte = maxExperience;
+    }
+    if (Object.keys(experienceFilter).length > 0) {
+      this.modelQuery = this.modelQuery.find({
+        experience: experienceFilter,
+      } as FilterQuery<T>);
+    }
+    return this;
+  }
   
   salaryRange() {
     const minSalary = this.query?.minSalary

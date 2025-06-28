@@ -2,17 +2,21 @@ import { Schema, model } from 'mongoose';
 import { ISupport } from './support.interface';
 
 const supportSchema = new Schema<ISupport>(
-     {
-          email: {
-               type: String,
-               default: '',
-          },
-          phone: {
-               type: String,
-               default: '',
-          },
-     },
-     { timestamps: true },
+  {
+    email: {
+      type: String,
+      default: '',
+    },
+    phone: {
+      type: String,
+      default: '',
+    },
+    location: {
+      type: String,
+      default: '',
+    },
+  },
+  { timestamps: true },
 );
 
 // Create the model

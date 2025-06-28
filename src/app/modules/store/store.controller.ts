@@ -11,7 +11,7 @@ const addProduct = catchAsync(async (req, res) => {
   const { userId }: any = req.user;
 
   const images = files.images?.map((photo) =>
-    updateFileName('images', photo.filename),
+    updateFileName('product', photo.filename),
   );
   body.images = images;
   const result = await ProductsService.addProduct(body, userId);

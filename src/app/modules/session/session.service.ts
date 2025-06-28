@@ -466,6 +466,7 @@ const getRecommendedCoach = async (
     .search([])
     .priceRange()
     .languageFilter()
+    .experienceRange()
     .modelQuery.exec();
 
   // 7. Count total number of sessions after filtering, sorting, etc.
@@ -516,7 +517,6 @@ const getAvailableTimeSlots = async (coachId: string, selectedDay: Date) => {
       },
     },
   });
-  console.log('session', session);
 
   if (!session) {
     return [];
@@ -546,6 +546,7 @@ const getAvailableTimeSlots = async (coachId: string, selectedDay: Date) => {
       startTime12h: slot.startTime12h,
       endTime: slot.endTime,
       endTime12h: slot.endTime12h,
+      isbooked:slot.isBooked,
       pricePerSession: session.pricePerSession,
     }));
 

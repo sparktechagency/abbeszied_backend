@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { otpRoutes } from '../modules/otp/otp.routes';
 import { userRoutes } from '../modules/user/user.route';
 import { authRoutes } from '../modules/auth/auth.route';
-import settingsRouter from '../modules/settings/setting.route';
 import { ruleRoutes } from '../modules/rule/rule.routes';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
 import contactUsRoutes from '../modules/contactUs/contactUs.route';
@@ -27,6 +26,7 @@ import { CertificateManagmentsRoutes } from '../modules/certificateManagments/ce
 import { NotificationRoutes } from '../modules/notification/notification.routes';
 import { AdminRoutes } from '../modules/admin/admin.route';
 import { DashboardRoutes } from '../modules/dashboard/dashboard.route';
+import SettingsRouter from '../modules/sattings/sattings.route';
 
 const router = Router();
 
@@ -56,8 +56,8 @@ const moduleRoutes = [
     route: FavouritdJobRouter,
   },
   {
-    path: '/setting',
-    route: settingsRouter,
+    path: '/settings',
+    route: SettingsRouter,
   },
   {
     path: '/notifications',

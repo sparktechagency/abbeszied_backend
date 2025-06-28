@@ -9,6 +9,7 @@ import {
   IRescheduleBookingPayload,
   PaymentStatus,
   SessionStatus,
+  SessionType,
 } from './booking.interface';
 import { Booking } from './booking.models';
 import stripe from '../../config/stripe.config';
@@ -23,7 +24,49 @@ const convertTo12Hour = (time24h: string): string => {
   const hour12 = hour % 12 || 12;
   return `${hour12}:${minutes} ${ampm}`;
 };
+// Helper function to get expected session count based on package type
+// const getExpectedSessionCount = (sessionPackage: SessionType): number => {
+//   switch (sessionPackage) {
+//     case SessionType.TRIAL:
+//       return 1;
+//     case SessionType.SESSION_4:
+//       return 4;
+//     case SessionType.SESSION_8:
+//       return 8;
+//     case SessionType.SESSION_12:
+//       return 12;
+//     default:
+//       throw new AppError(httpStatus.BAD_REQUEST, 'Invalid session package');
+//   }
+// };
 
+// Helper function to generate product name
+// const getProductName = (sessionPackage: SessionType, coachName: string, sessionCount: number): string => {
+//   switch (sessionPackage) {
+//     case SessionType.TRIAL:
+//       return `Trial Coaching Session with ${coachName}`;
+//     case SessionType.SESSION_4:
+//     case SessionType.SESSION_8:
+//     case SessionType.SESSION_12:
+//       return `${sessionCount}-Session Coaching Package with ${coachName}`;
+//     default:
+//       return `Coaching Session with ${coachName}`;
+//   }
+// };
+
+// Helper function to generate product description
+// const getProductDescription = (sessionPackage: SessionType, sessions: ISessionSlot[]): string => {
+//   if (sessionPackage === SessionType.TRIAL) {
+//     const session = sessions[0];
+//     return `Trial session on ${new Date(session.selectedDay).toLocaleDateString()} from ${session.startTime} to ${session.endTime}`;
+//   }
+
+//   const sessionDates = sessions.map(s =>
+//     `${new Date(s.selectedDay).toLocaleDateString()} (${s.startTime}-${s.endTime})`
+//   ).join(', ');
+
+//   return `${sessions.length} coaching sessions scheduled for: ${sessionDates}`;
+// };
 // // Helper function to get package session count
 // const getPackageSessionCount = (packageType: SessionPackage): number => {
 //   const packageCounts = {
@@ -169,7 +212,158 @@ const createPaymentIntent = async (
     );
   }
 };
+// const createPaymentIntent = async (
+//   payload: ICreateBookingPayload & { userId: string },
+// ) => {
+//   // Validate session exists
+//   const session = await Session.findById(payload.sessionId);
+//   if (!session) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'Session not found');
+//   }
 
+//   // Validate coach exists
+//   const coach = await User.findById(payload.coachId);
+//   if (!coach) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'Coach not found');
+//   }
+
+//   // Validate user exists
+//   const user = await User.findById(payload.userId);
+//   if (!user) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+//   }
+
+//   // Validate session package and sessions count
+//   const expectedSessionCount = getExpectedSessionCount(payload.sessionPackage);
+//   if (payload.sessionTimes.length !== expectedSessionCount) {
+//     throw new AppError(
+//       httpStatus.BAD_REQUEST,
+//       `${payload.sessionPackage} requires exactly ${expectedSessionCount} session(s), but ${payload.sessionTimes.length} provided`
+//     );
+//   }
+
+//   // Validate all time slots are available
+//   const unavailableSlots: string[] = [];
+//   for (const sessionSlot of payload.sessionTimes) {
+//     const isSlotAvailable = await Session.findOne({
+//       _id: payload.sessionId,
+//       coachId: new Types.ObjectId(payload.coachId),
+//       'dailySessions.selectedDay': new Date(sessionSlot.selectedDay),
+//       'dailySessions.timeSlots.startTime12h': sessionSlot.startTime,
+//       'dailySessions.timeSlots.isBooked': false,
+//     });
+
+//     if (!isSlotAvailable) {
+//       unavailableSlots.push(`${sessionSlot.selectedDay} at ${sessionSlot.startTime}`);
+//     }
+
+//     // Check for existing bookings
+//     const existingBooking = await Booking.findOne({
+//       coachId: new Types.ObjectId(payload.coachId),
+//       selectedDay: new Date(sessionSlot.selectedDay),
+//       startTime: sessionSlot.startTime,
+//       bookingStatus: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+//     });
+
+//     if (existingBooking) {
+//       unavailableSlots.push(`${sessionSlot.selectedDay} at ${sessionSlot.startTime} (already booked)`);
+//     }
+//   }
+
+//   if (unavailableSlots.length > 0) {
+//     throw new AppError(
+//       httpStatus.BAD_REQUEST,
+//       `The following time slots are not available: ${unavailableSlots.join(', ')}`
+//     );
+//   }
+
+//   // Create bookings for all sessions
+//   const createdBookings = [];
+//   try {
+//     for (const sessionSlot of payload.sessionTimes) {
+//       const booking = await Booking.create({
+//         sessionId: payload.sessionId,
+//         coachId: payload.coachId,
+//         userId: payload.userId,
+//         selectedDay: new Date(sessionSlot.selectedDay),
+//         startTime: sessionSlot.startTime,
+//         endTime: sessionSlot.endTime,
+//         price: payload.sessionPackage === SessionType.TRIAL ? payload.price : payload.price / payload.sessionTimes.length, // Distribute price for packages
+//         sessionPackage: payload.sessionPackage,
+//         bookingStatus: BookingStatus.PENDING,
+//         paymentStatus: PaymentStatus.PENDING,
+//       });
+//       createdBookings.push(booking);
+//     }
+
+//     // Create Stripe Checkout Session
+//     const stripeSession = await stripe.checkout.sessions.create({
+//       payment_method_types: ['card'],
+//       line_items: [
+//         {
+//           price_data: {
+//             currency: 'usd',
+//             product_data: {
+//               name: getProductName(payload.sessionPackage, coach.fullName, payload.sessionTimes.length),
+//               description: getProductDescription(payload.sessionPackage, payload.sessionTimes),
+//             },
+//             unit_amount: Math.round(payload.price * 100),
+//           },
+//           quantity: 1,
+//         },
+//       ],
+//       mode: 'payment',
+//       expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minutes
+//       success_url: `${process.env.STRIPE_SUCCESS_URL}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
+//       cancel_url: `${process.env.STRIPE_CANCLE_URL}/booking-cancelled`,
+//       metadata: {
+//         bookingIds: createdBookings.map(b => b._id!.toString()).join(','),
+//         userId: payload.userId,
+//         coachId: payload.coachId,
+//         sessionId: payload.sessionId,
+//         sessionPackage: payload.sessionPackage,
+//         sessionCount: payload.sessionTimes.length.toString(),
+//       },
+//     });
+
+//     // Update all bookings with checkout session ID
+//     await Promise.all(
+//       createdBookings.map(booking =>
+//         Booking.findByIdAndUpdate(booking._id, {
+//           checkoutSessionId: stripeSession.id,
+//         })
+//       )
+//     );
+
+//     return {
+//       bookings: createdBookings,
+//       checkoutUrl: stripeSession.url,
+//       checkoutSessionId: stripeSession.id,
+//       sessionPackage: payload.sessionPackage,
+//       totalSessions: payload.sessionTimes.length,
+//     };
+
+//   } catch (stripeError: any) {
+//     // Log the actual Stripe error
+//     console.error('Stripe Error Details:', {
+//       type: stripeError.type,
+//       code: stripeError.code,
+//       message: stripeError.message,
+//       param: stripeError.param,
+//       statusCode: stripeError.statusCode,
+//     });
+
+//     // Clean up all temporary bookings
+//     await Promise.all(
+//       createdBookings.map(booking => Booking.findByIdAndDelete(booking._id))
+//     );
+
+//     throw new AppError(
+//       httpStatus.BAD_REQUEST,
+//       `Stripe Error: ${stripeError.message || 'Failed to create checkout session'}`,
+//     );
+//   }
+// };
 // Reschedule booking
 const rescheduleBooking = async (
   bookingId: string,
@@ -391,8 +585,8 @@ const getUserBookings = async (
   // Convert times to 12-hour format for display
   const bookingsWithFormattedTime = bookings.map((booking) => ({
     ...booking.toObject(),
-    startTime12h: convertTo12Hour(booking.startTime),
-    endTime12h: convertTo12Hour(booking.endTime),
+    startTime12h: booking.startTime,
+    endTime12h: booking.endTime,
   }));
 
   return {
@@ -427,8 +621,8 @@ const getCoachBookings = async (
   // Convert times to 12-hour format for display
   const bookingsWithFormattedTime = bookings.map((booking) => ({
     ...booking.toObject(),
-    startTime12h: convertTo12Hour(booking.startTime),
-    endTime12h: convertTo12Hour(booking.endTime),
+    startTime12h: booking.startTime,
+    endTime12h: booking.endTime,
   }));
 
   return {
@@ -584,13 +778,13 @@ const completeBooking = async (bookingId: string, coachId: string) => {
   const [hours, minutes] = booking.startTime.split(':');
   bookingDateTime.setHours(parseInt(hours), parseInt(minutes));
 
-  const now = new Date();
-  if (now < bookingDateTime) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Cannot complete future booking',
-    );
-  }
+  // const now = new Date();
+  // if (now < bookingDateTime) {
+  //   throw new AppError(
+  //     httpStatus.BAD_REQUEST,
+  //     'Cannot complete future booking',
+  //   );
+  // }
 
   const updatedBooking = await Booking.findByIdAndUpdate(
     bookingId,
@@ -600,7 +794,7 @@ const completeBooking = async (bookingId: string, coachId: string) => {
   const client = await User.findById(booking?.userId);
   await sendNotifications({
     receiver: booking?.userId,
-    type: 'COMPLETED',
+    type: 'ORDER',
     message: `Client ${client?.fullName} has completed the session`,
   });
   // Update user experience

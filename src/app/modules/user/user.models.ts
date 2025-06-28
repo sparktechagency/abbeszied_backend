@@ -101,7 +101,7 @@ const userSchema = new Schema<TUser>(
     verifiedByAdmin: {
       type: String,
       enum: ['pending', 'verified', 'rejected'],
-      default: 'pending',
+      default: 'verified',
     },
     verifiedBadge: {
       type: Boolean,

@@ -26,6 +26,7 @@ authRoutes
       USER_ROLE.COACH,
       USER_ROLE.CORPORATE,
       USER_ROLE.ADMIN,
+      USER_ROLE.SUPER_ADMIN,
     ),
     authControllers.changePassword,
   )
