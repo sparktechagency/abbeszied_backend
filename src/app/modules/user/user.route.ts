@@ -25,6 +25,7 @@ userRoutes
       USER_ROLE.COACH,
       USER_ROLE.CORPORATE,
       USER_ROLE.ADMIN,
+      USER_ROLE.SUPER_ADMIN,
     ),
     userController.getMyProfile,
   )
@@ -39,6 +40,7 @@ userRoutes
       USER_ROLE.COACH,
       USER_ROLE.ADMIN,
       USER_ROLE.CORPORATE,
+      USER_ROLE.SUPER_ADMIN,
     ),
     upload.fields([
       { name: 'image', maxCount: 1 },

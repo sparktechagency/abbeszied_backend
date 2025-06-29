@@ -27,6 +27,7 @@ import { NotificationRoutes } from '../modules/notification/notification.routes'
 import { AdminRoutes } from '../modules/admin/admin.route';
 import { DashboardRoutes } from '../modules/dashboard/dashboard.route';
 import SettingsRouter from '../modules/sattings/sattings.route';
+import { FAQRoutes } from '../modules/faqs/faq.route';
 
 const router = Router();
 
@@ -146,6 +147,10 @@ const moduleRoutes = [
   {
     path: '/dashboard',
     route: DashboardRoutes,
+  },
+  {
+    path: '/faq',
+    route: FAQRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
