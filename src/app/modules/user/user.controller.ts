@@ -8,6 +8,7 @@ import { FilesObject } from '../../interface/common.interface';
 import { USER_ROLE } from './user.constants';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
+  console.log('first');
   const { body, files } = req as Request & { files: FilesObject };
   const cerificates = files.cerificates?.map((photo) =>
     updateFileName('profile', photo.filename),

@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { IChat } from './chat.interface';
 
 const chatSchema = new Schema<IChat>(

@@ -14,6 +14,10 @@ userRoutes
   .post(
     '/create',
     upload.fields([{ name: 'cerificates', maxCount: 5 }]),
+    (req, res, next) => {
+      console.log(req.body);
+      next();
+    },
     parseData(),
     validateRequest(userValidation?.userValidationSchema),
     userController.createUser,
