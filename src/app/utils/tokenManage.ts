@@ -1,4 +1,4 @@
-import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
+import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 import AppError from '../error/AppError';
 import httpStatus from 'http-status';
 
@@ -20,7 +20,7 @@ const createToken = ({
 }: CreateTokenParams): string => {
   const token = jwt.sign(payload, access_secret, {
     expiresIn: expity_time,
-  });
+  } as SignOptions);
 
   return token;
 };

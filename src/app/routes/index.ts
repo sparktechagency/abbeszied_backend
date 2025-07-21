@@ -2,9 +2,7 @@ import { Router } from 'express';
 import { otpRoutes } from '../modules/otp/otp.routes';
 import { userRoutes } from '../modules/user/user.route';
 import { authRoutes } from '../modules/auth/auth.route';
-import { ruleRoutes } from '../modules/rule/rule.routes';
 import stripeAccountRoutes from '../modules/stripeAccount/stripeAccount.route';
-import contactUsRoutes from '../modules/contactUs/contactUs.route';
 import experienceRoutes from '../modules/experience/experience.route';
 import sessionRoutes from '../modules/session/session.route';
 import galleryRoutes from '../modules/gallery/gallery.route';
@@ -45,10 +43,6 @@ const moduleRoutes = [
     route: otpRoutes,
   },
   {
-    path: '/rule',
-    route: ruleRoutes,
-  },
-  {
     path: '/favourite',
     route: FavouritdRouter,
   },
@@ -67,10 +61,6 @@ const moduleRoutes = [
   {
     path: '/stripe',
     route: stripeAccountRoutes,
-  },
-  {
-    path: '/contact',
-    route: contactUsRoutes,
   },
   {
     path: '/experience',

@@ -10,7 +10,7 @@ const stripeAccountRoutes = express.Router();
 stripeAccountRoutes
   .post(
     '/create-connected-account',
-    auth(USER_ROLE.BUSINESS),
+    auth(USER_ROLE.COACH),
     stripeAccountController.createStripeAccount,
   )
   .get('/success-account/:id', stripeAccountController.successPageAccount)

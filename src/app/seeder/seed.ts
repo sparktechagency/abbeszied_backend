@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 import config from '../config';
 import { User } from '../modules/user/user.models';
 import bcrypt from 'bcrypt';
-import Rule from '../modules/rule/rule.model';
-import Settings from '../modules/settings/settings.model';
+// import Settings from '../modules/settings/settings.model';
 // Sample demo data for users (with the provided user ID)
 
 const usersData = [
@@ -113,29 +112,18 @@ const seedUsers = async () => {
   }
 };
 
-const seedSettings = async () => {
-  try {
-    await Settings.deleteMany();
+// const seedSettings = async () => {
+//   try {
+//     await Settings.deleteMany();
 
-    await Settings.insertMany(settingData);
+//     await Settings.insertMany(settingData);
 
-    console.log('Setting  seeded successfully!');
-  } catch (err) {
-    console.error('Error seeding setting:', err);
-  }
-};
+//     console.log('Setting  seeded successfully!');
+//   } catch (err) {
+//     console.error('Error seeding setting:', err);
+//   }
+// };
 
-const seedRules = async () => {
-  try {
-    await Rule.deleteMany();
-
-    await Rule.insertMany(rules);
-
-    console.log('Rules seeded successfully!');
-  } catch (err) {
-    console.error('Error seeding rules:', err);
-  }
-};
 
 
 // Connect to MongoDB
@@ -146,8 +134,6 @@ const seedDatabase = async () => {
   try {
     await dropDatabase();
     await seedUsers();
-    await seedSettings();
-    await seedRules();
 
     console.log('--------------> Database seeding completed <--------------');
   } catch (err) {
