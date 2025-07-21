@@ -3,12 +3,12 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import path from 'path';
-import handleStripeWebhook from './app/helpers/stripe/handleStripeWebhook'; // Your webhook handler
-
+import handleStripeWebhook from './app/helpers/stripe/handleStripeWebhook'; 
 // Import your other middleware & routers if needed
 import globalErrorHandler from './app/middleware/globalErrorhandler';
 import notFound from './app/middleware/notfound';
 import router from './app/routes';
+import { welcome } from './app/utils/welcome';
 
 const app: Application = express();
 
@@ -45,7 +45,7 @@ app.use('/api/v1', router);
 
 // Basic route for testing
 app.get('/', (req: Request, res: Response) => {
-  res.send('Sports server is running');
+   res.send(welcome());
 });
 
 // Error handling middleware

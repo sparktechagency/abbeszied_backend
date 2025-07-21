@@ -26,3 +26,15 @@ Wed Jul 02 2025 22:8:56 [MY_SERVER] info: [33m♻️  Application listening on 
 Wed Jul 02 2025 22:10:39 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
 Wed Jul 02 2025 22:10:39 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
 Wed Jul 02 2025 22:10:39 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Wed Jul 02 2025 22:10:54 [MY_SERVER] info: [46m🚀 Database connected successfully[49m
+Wed Jul 02 2025 22:10:54 [MY_SERVER] info: [33m♻️ Socket is listening on http://10.0.60.126:5000[39m
+Wed Jul 02 2025 22:10:54 [MY_SERVER] info: [33m♻️  Application listening on http://10.0.60.126:5000[39m
+Wed Jul 02 2025 22:12:29 [MY_SERVER] info: [34mA user connected[39m
+Wed Jul 02 2025 22:25:38 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jul 02 2025 22:26:56 [MY_SERVER] info: [34mA user connected[39m
+Wed Jul 02 2025 22:28:36 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jul 02 2025 22:28:39 [MY_SERVER] info: [34mA user connected[39m
+Wed Jul 02 2025 22:32:11 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jul 02 2025 22:32:15 [MY_SERVER] info: [34mA user connected[39m
+Wed Jul 02 2025 22:33:17 [MY_SERVER] info: [31mA user disconnect[39m
+Wed Jul 02 2025 22:33:25 [MY_SERVER] info: [34mA user connected[39m
