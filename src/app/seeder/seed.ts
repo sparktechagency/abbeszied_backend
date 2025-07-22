@@ -22,7 +22,7 @@ const hashPassword = async (password: string) => {
      return await bcrypt.hash(password, salt);
 };
 
-// Function to seed users
+// Function to seed users 
 const seedUsers = async () => {
      try {
           // await User.deleteMany();
