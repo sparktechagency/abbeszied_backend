@@ -37,6 +37,10 @@ export default {
   otp_expire_time: process.env.OTP_EXPIRE_TIME,
   otp_token_expire_time: process.env.OTP_TOKEN_EXPIRE_TIME,
   socket_port: process.env.SOCKET_PORT,
+  super_admin: {
+    email: process.env.SUPER_ADMIN_EMAIL,
+    password: process.env.SUPER_ADMIN_PASSWORD,
+  },
   aws,
   stripe,
 };
