@@ -22,10 +22,10 @@ const hashPassword = async (password: string) => {
      return await bcrypt.hash(password, salt);
 };
 
-// Function to seed users 
+// Function to seed users
 const seedUsers = async () => {
      try {
-          // await User.deleteMany();
+          await User.deleteMany();
           const hashedUsersData = await Promise.all(
                usersData.map(async (user: any) => {
                     const hashedPassword = await hashPassword(user.password);
@@ -33,19 +33,21 @@ const seedUsers = async () => {
                }),
           );
           await User.insertMany(hashedUsersData);
-          logger.info('Users seeded successfully!');
+          console.log('Users seeded successfully!');
      } catch (err) {
-          console.error('Error seeding users: ', err);
+          console.error('Error seeding users:', err);
      }
 };
+
+// // Function to seed categories
 
 // Main seeding function
 const seedSuperAdmin = async () => {
      try {
-          logger.info('--------------> Database seeding start <--------------');
+          console.log('--------------> Database seeding start <--------------');
           await seedUsers();
           // await seedCategories(); // Seed categories after users
-          logger.info('--------------> Database seeding completed <--------------');
+          console.log('--------------> Database seeding completed <--------------');
      } catch (error) {
           logger.error('Error creating Super Admin:', error);
      } finally {
