@@ -8,7 +8,7 @@ import { logger } from '../utils/logger';
 
 const usersData = [
      {
-          fullName: 'Administrator',
+          fullName: 'Super Admin',
           email: config.super_admin.email,
           role: USER_ROLE.SUPER_ADMIN,
           password: config.super_admin.password, // No need to hash here
