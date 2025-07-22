@@ -35,7 +35,7 @@ const seedUsers = async () => {
           await User.insertMany(hashedUsersData);
           logger.info('Users seeded successfully!');
      } catch (err) {
-          console.error('Error seeding users:', err);
+          console.error('Error seeding users: ', err);
      }
 };
 
