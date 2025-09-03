@@ -4,7 +4,6 @@ import auth from '../../middleware/auth';
 import { USER_ROLE } from '../user/user.constants';
 import fileUpload from '../../middleware/fileUpload';
 import parseData from '../../middleware/parseData';
-
 const upload = fileUpload('./public/uploads/images');
 const router = express.Router();
 
@@ -17,7 +16,7 @@ router.post(
     USER_ROLE.SUPER_ADMIN,
     USER_ROLE.ADMIN,
   ),
-  upload.fields([{ name: 'images', maxCount: 5 }]),
+  upload.fields([{ name: 'image', maxCount: 5 }]),
   parseData(),
   MessageController.sendMessage,
 );
@@ -25,33 +24,33 @@ router.post(
 router.get(
   '/:chatId',
   auth(
-     USER_ROLE.CLIENT,
-     USER_ROLE.COACH,
-     USER_ROLE.SUPER_ADMIN,
-     USER_ROLE.ADMIN,
-   ),
+    USER_ROLE.CLIENT,
+    USER_ROLE.COACH,
+    USER_ROLE.SUPER_ADMIN,
+    USER_ROLE.ADMIN,
+  ),
   MessageController.getMessages,
 );
 
 router.post(
   '/react/:messageId',
   auth(
-     USER_ROLE.CLIENT,
-     USER_ROLE.COACH,
-     USER_ROLE.SUPER_ADMIN,
-     USER_ROLE.ADMIN,
-   ),
+    USER_ROLE.CLIENT,
+    USER_ROLE.COACH,
+    USER_ROLE.SUPER_ADMIN,
+    USER_ROLE.ADMIN,
+  ),
   MessageController.addReaction,
 );
 
 router.delete(
   '/delete/:messageId',
   auth(
-     USER_ROLE.CLIENT,
-     USER_ROLE.COACH,
-     USER_ROLE.SUPER_ADMIN,
-     USER_ROLE.ADMIN,
-   ),
+    USER_ROLE.CLIENT,
+    USER_ROLE.COACH,
+    USER_ROLE.SUPER_ADMIN,
+    USER_ROLE.ADMIN,
+  ),
   MessageController.deleteMessage,
 );
 
@@ -59,11 +58,11 @@ router.delete(
 router.patch(
   '/pin-unpin/:messageId',
   auth(
-     USER_ROLE.CLIENT,
-     USER_ROLE.COACH,
-     USER_ROLE.SUPER_ADMIN,
-     USER_ROLE.ADMIN,
-   ),
+    USER_ROLE.CLIENT,
+    USER_ROLE.COACH,
+    USER_ROLE.SUPER_ADMIN,
+    USER_ROLE.ADMIN,
+  ),
   MessageController.pinUnpinMessage,
 );
 
