@@ -6,64 +6,9 @@
     "auditLog": "R:\\projects\\backend-abbezaied\\winston\\success\\.70d0d458ee3e642104fa4bb9cabbac11fd57ed42-audit.json",
     "files": [
         {
-            "date": 1756285379558,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\27-08-2025-15-success.log",
-            "hash": "691d7c0f0c721a2e2b1dceeaf0feec96d6b4ff0f2d136d1efe96b604956fe916"
-        },
-        {
-            "date": 1756288872024,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\27-08-2025-16-success.log",
-            "hash": "4fcb60fc2a254c29845fae792463c7933378a6a7972596b25fc84e34e3456211"
-        },
-        {
-            "date": 1756292449124,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\27-08-2025-17-success.log",
-            "hash": "33641a7b150b1a0bbe7e9771932f0f6e87461fb025f54e55a2427c86aa938164"
-        },
-        {
-            "date": 1756296002567,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\27-08-2025-18-success.log",
-            "hash": "eb8e586c08548b502ef65c52bfad4690c57bbf8fdc817c5f35a12019f1b28656"
-        },
-        {
-            "date": 1756310216011,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\27-08-2025-21-success.log",
-            "hash": "2aee8d8051d7eaa0e0d9ee0cfa0919ee0e7cf5563ef4782b0e863efaa996bf61"
-        },
-        {
-            "date": 1756353154586,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\28-08-2025-09-success.log",
-            "hash": "9abc43ff4d42d32e485c21826c666f988658f40bd2c04be0636147474b8d8502"
-        },
-        {
-            "date": 1756353604658,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\28-08-2025-10-success.log",
-            "hash": "856a56b482829dd1de3623dfb5ac1340abc0664bfa6e9e440d4090409c922ab7"
-        },
-        {
-            "date": 1756358773915,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\28-08-2025-11-success.log",
-            "hash": "1eb47c2469d2dd816414afc37bbaec17d29c20d89ceda59be9b830f92658029c"
-        },
-        {
-            "date": 1756362835595,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\28-08-2025-12-success.log",
-            "hash": "d024078ebd5e3295d3e75416f5e7559958ffdcc0474c78e19e2a36edb0ab6eaf"
-        },
-        {
-            "date": 1756365621214,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\28-08-2025-13-success.log",
-            "hash": "a7bb1d47bc1810cf780e9ab76e3137412717e2f4c54cb8fa4f7e1ed584c3778d"
-        },
-        {
-            "date": 1756368467365,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\28-08-2025-14-success.log",
-            "hash": "a2aa3e1cbd3ad6d3dc993969e6c0109eb1110e85337cc4f81ea5eff7ed365963"
-        },
-        {
-            "date": 1756371639149,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\28-08-2025-15-success.log",
-            "hash": "b97901c4d7535ae77a2bab384729f25840919c1ace16287b85fb81585fa15d6d"
+            "date": 1756906349111,
+            "name": "R:\\projects\\backend-abbezaied\\winston\\success\\03-09-2025-19-success.log",
+            "hash": "3b698b5ccbabc4c05561296c837cb7e2778c552cf326785f8b8b08391e459a04"
         }
     ],
     "hashType": "sha256"

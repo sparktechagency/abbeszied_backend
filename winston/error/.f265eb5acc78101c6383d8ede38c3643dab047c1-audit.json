@@ -6,29 +6,9 @@
     "auditLog": "R:\\projects\\backend-abbezaied\\winston\\error\\.f265eb5acc78101c6383d8ede38c3643dab047c1-audit.json",
     "files": [
         {
-            "date": 1756276669477,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\error\\27-08-2025-12-error.log",
-            "hash": "a2a108b599f7c252d155a10e02a4b70effd9d82944de7cdcddb4a08a1879d1bd"
-        },
-        {
-            "date": 1756278115414,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\error\\27-08-2025-13-error.log",
-            "hash": "bc1ca4e40751830542a1d784f940af564e92d61f1d0df52e62b23d7e0aa85520"
-        },
-        {
-            "date": 1756295693178,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\error\\27-08-2025-17-error.log",
-            "hash": "faaa3f7ab7016ee6e233d1495ab506aee51601028d07cf581faee365092d36c7"
-        },
-        {
-            "date": 1756296144354,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\error\\27-08-2025-18-error.log",
-            "hash": "db47f317d74292caf1bd80b31dc117cec06d7b2366b0458c84446ec7941f58e5"
-        },
-        {
-            "date": 1756310216014,
-            "name": "R:\\projects\\backend-abbezaied\\winston\\error\\27-08-2025-21-error.log",
-            "hash": "f8aa93cbc8276ea1de89e52cb03548d18a78762009cdca4b44c19fa194093520"
+            "date": 1756906349116,
+            "name": "R:\\projects\\backend-abbezaied\\winston\\error\\03-09-2025-19-error.log",
+            "hash": "eed317608cc83fd1319054e081fe5f2019f2575a7ffbb65db06bdbce10460ef7"
         }
     ],
     "hashType": "sha256"
