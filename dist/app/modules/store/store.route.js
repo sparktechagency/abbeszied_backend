@@ -1,0 +1,24 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.storeRouter = void 0;
+const express_1 = __importDefault(require("express"));
+const store_controller_1 = require("./store.controller");
+const auth_1 = __importDefault(require("../../middleware/auth"));
+const validateRequest_1 = __importDefault(require("../../middleware/validateRequest"));
+const store_validation_1 = require("./store.validation");
+const user_constants_1 = require("../user/user.constants");
+const fileUpload_1 = __importDefault(require("../../middleware/fileUpload"));
+const parseData_1 = __importDefault(require("../../middleware/parseData"));
+const upload = (0, fileUpload_1.default)('./public/uploads/product');
+const router = express_1.default.Router();
+router.post('/create', (0, auth_1.default)(user_constants_1.USER_ROLE.CLIENT, user_constants_1.USER_ROLE.COACH), upload.fields([{ name: 'images', maxCount: 5 }]), (0, parseData_1.default)(), (0, validateRequest_1.default)(store_validation_1.ProductValidation.productValidationSchema), store_controller_1.Productcontroller.addProduct);
+router.patch('/product-update/:id', (0, auth_1.default)(user_constants_1.USER_ROLE.CLIENT, user_constants_1.USER_ROLE.COACH), upload.fields([{ name: 'images', maxCount: 5 }]), (0, parseData_1.default)(), (0, validateRequest_1.default)(store_validation_1.ProductValidation.productValidationSchema), store_controller_1.Productcontroller.updateProduct);
+router.get('/my-listing', (0, auth_1.default)(user_constants_1.USER_ROLE.CLIENT, user_constants_1.USER_ROLE.COACH), store_controller_1.Productcontroller.getMyProducts);
+router.get('/products', (0, auth_1.default)(user_constants_1.USER_ROLE.CLIENT, user_constants_1.USER_ROLE.COACH), store_controller_1.Productcontroller.getAllProducts);
+router.get('/product/:id', (0, auth_1.default)(user_constants_1.USER_ROLE.CLIENT, user_constants_1.USER_ROLE.COACH), store_controller_1.Productcontroller.getProduct);
+router.patch('/mark-sold/:id', (0, auth_1.default)(user_constants_1.USER_ROLE.COACH, user_constants_1.USER_ROLE.CLIENT), store_controller_1.Productcontroller.markSold);
+router.delete('/delete/:id', (0, auth_1.default)(user_constants_1.USER_ROLE.COACH, user_constants_1.USER_ROLE.CLIENT), store_controller_1.Productcontroller.deleteProduct);
+exports.storeRouter = router;

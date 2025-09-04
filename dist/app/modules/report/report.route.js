@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.reportRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const report_controller_1 = require("./report.controller");
+const report_validation_1 = require("./report.validation");
+const auth_1 = __importDefault(require("../../middleware/auth"));
+const user_constants_1 = require("../user/user.constants");
+const validateRequest_1 = __importDefault(require("../../middleware/validateRequest"));
+const fileUpload_1 = __importDefault(require("../../middleware/fileUpload"));
+const parseData_1 = __importDefault(require("../../middleware/parseData"));
+const upload = (0, fileUpload_1.default)('./public/uploads/reports');
+const router = express_1.default.Router();
+router.post('/create-report', (0, auth_1.default)(user_constants_1.USER_ROLE.CLIENT, user_constants_1.USER_ROLE.COACH), upload.single('image'), (0, parseData_1.default)(), report_controller_1.ReportController.createReport);
+router.patch('/give-warning/:id', (0, auth_1.default)(user_constants_1.USER_ROLE.ADMIN, user_constants_1.USER_ROLE.SUPER_ADMIN), (0, validateRequest_1.default)(report_validation_1.ReportValidation.warningReportZodSchema), report_controller_1.ReportController.giveWarningReportedPostAuthor);
+router.get('/', (0, auth_1.default)(user_constants_1.USER_ROLE.ADMIN, user_constants_1.USER_ROLE.SUPER_ADMIN), report_controller_1.ReportController.getAllReports);
+router.patch('/delete-post/:id', (0, auth_1.default)(user_constants_1.USER_ROLE.ADMIN, user_constants_1.USER_ROLE.SUPER_ADMIN), report_controller_1.ReportController.deleteReportedPost);
+exports.reportRoutes = router;
